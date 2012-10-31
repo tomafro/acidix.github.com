@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Mastering the Mac App Store #1: App doesn't install &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2011/11/mastering-the-mac-app-store-1-app-doesnt-install"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2011/11/mastering-the-mac-app-store-1-app-doesnt-install">Mastering the Mac App Store #1: App doesn't install</a></h2>
+    <p>I had another coming together with the <em>nice</em> Mac Appstore. I really have mixed feelings about this thing. While I do like the idea of having a central place to manage my apps, it suffers from major problems …</p>
+
+<ul>
+<li>It&#8217;s too slow.</li>
+
+<li>It&#8217;s incomplete.</li>
+
+<li>It causes problems</li>
+</ul>
+
+<p>Especially the third aspect bit me yesterday. I had the Trial version of <a title='Vico App' href='http://www.vicoapp.com/'>Vico</a> installed on my Mac (the editor I was looking for, by the way …) and wanted to upgrade to the paid version. That said, the most logical approach for me was to just go to the Mac Appstore and buy the damn thing!</p>
+
+<p>Having done that, I got suspicious right after I bought it. The Appstore told me that <a title='Vico App' href='http://www.vicoapp.com/'>Vico</a> was already installed and if I wanted to redownload it. I responded &#8220;Yes, redownload&#8221;. That did nothing - opening <a title='Vico App' href='http://www.vicoapp.com/'>Vico</a> still showed me my Trial period was over.</p>
+
+<p>The next try was to remove <em>Vico.app</em> from my <em>Applications</em> directory, clearing the Trash and try again. This is where things got really annoying … I was able to select &#8220;Install&#8221; from the Mac Appstore, it showed Launchpad with the nice <a title='Vico App' href='http://www.vicoapp.com/'>Vico</a> Icon, but after the <em>Installing</em> step was finished, the icon just disappeared &#8230;</p>
+
+<p>Looking at the logs revealed at least the outcome of the problem &#8230;</p>
+
+<pre><code>    installd: PackageKit: ----- Begin install -----
+    installd: PackageKit: Not installing MAS receipt for skipped 
+            bundle at Applications/Vico.app
+    installd: Installed &quot;Vico&quot; ()
+    installd: PackageKit: ----- End install -----</code></pre>
+
+<p>OK, so it <em>skipped</em> the bundle. But why? Alright, diving deeper I had a look at the &#8216;installd&#8217; process while running the installation:</p>
+
+<pre><code>    # First find the PID
+    ps -ef | grep installd
+    #
+    # Now trace it
+    sudo dtruss -p &lt;pid&gt;
+    # 
+    # Now run the installation again</code></pre>
+
+<p>Right, a lot of tracing information. However, 2 files that I was suspicious about:</p>
+
+<pre><code>    open(&quot;/var/db/receipts/se.bzero.Vico.plist\0&quot;, 0x601, 0x1
+         = 5 0
+    open(&quot;/var/db/receipts/se.bzero.Vico.bom\0&quot;, 0x601, 0x1B6)
+         = 5 0</code></pre>
+
+<p>Alright, let&#8217;s clear them (they were also present in /tmp):</p>
+
+<pre><code>    sudo rm /var/db/receipts/se.bzero.Vico.plist 
+    sudo rm /var/db/receipts/se.bzero.Vico.bom
+	sudo rm /tmp/se.bzero.Vico.plist 
+    sudo rm /tmp/se.bzero.Vico.bom</code></pre>
+
+<p>But not enough, the install still showed the same problem. And even more annoyingly, every installation attempt created the files again &#8230; what I had to do was to restart &#8216;installd&#8217; and the Mac Appstore Management Process &#8216;storeagent&#8217;:</p>
+
+<pre><code>    sudo killall installd storeagent</code></pre>
+
+<p>Now, relaunching the Mac Appstore I could finally install <a title='Vico App' href='http://www.vicoapp.com/'>Vico</a> without any further issues …</p>
+
+<p>Given that this was really annoying - it&#8217;s also what I love about MacOS. You may have a partly malfunctioning Mac Appstore, an App Developer that may have not payed attention to what files to leave where - but in the end - you get it working. Thanks Apple! And hey - please make the Appstore more of a Mac Experience &#8230; soon.</p>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">30 November 2011</a></span>
+  <span class="tags"> &middot; <a href="/tags/appstore" rel="tag">appstore</a> &middot; <a href="/tags/mac" rel="tag">mac</a> &middot; <a href="/tags/vico" rel="tag">vico</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac">Import Mail from Thunderbird to Outlook 2011 on Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/03">27 March 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/timemachine-backup-on-a-shared-network-location">TimeMachine Backup on a Shared Network location</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">16 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/timemachine-backup-on-a-shared-network-location/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+<div class="container"><div class="row">
+	<div class="twelvecol">
+		<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div></div></div>
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>

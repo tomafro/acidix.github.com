@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ <title>Tom Ward</title>
+ <link href="http://tomafro.net/atom.xml" rel="self"/>
+ <updated>2012-10-23T23:43:16+01:00</updated>
+ <id>http://tomafro.net/</id>
+ <author>
+   <name>Tom Ward</name>
+   <email>tom@popdog.net</email>
+ </author>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/10/swap-audio-tracks-in-xvid</id>
+   <link href="http://tomafro.net/2012/10/swap-audio-tracks-in-xvid"/>
+   <title>Swap audio tracks in Xvid file</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;Well, this is more or less personal. Still interesting. Needed to batch-swap audio track of some video files (stuff I ripped from DVDs to play in iTunes, and stupidly I selected the german audio channel to play first). When I couldn&amp;#8217;t find a tool doing that, I decided to just explore how it&amp;#8217;s done with ffmpeg. And here&amp;#8217;s the outcome:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class='nv'&gt;filelist&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='nv'&gt;$@&lt;/span&gt;
+&lt;span class='nv'&gt;OLDVAL&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;1
+
+&lt;span class='c'&gt;# list the available tracks&lt;/span&gt;
+ffmpeg -i &lt;span class='nv'&gt;$1&lt;/span&gt; 2&amp;gt;&amp;amp;1 | grep Stream
+
+&lt;span class='nb'&gt;printf&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;%s [%s]: &amp;quot;&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Enter audio track to use: &amp;quot;&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;$OLDVAL&amp;quot;&lt;/span&gt;
+&lt;span class='nb'&gt;read &lt;/span&gt;NEWVAL
+
+&lt;span class='k'&gt;for &lt;/span&gt;file in &lt;span class='nv'&gt;$filelist&lt;/span&gt;; &lt;span class='k'&gt;do&lt;/span&gt;
+&lt;span class='k'&gt;	&lt;/span&gt;ffmpeg -i &lt;span class='nv'&gt;$file&lt;/span&gt; -map 0:0 -map 0:&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;NEWVAL&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; -vcodec copy swap_&lt;span class='nv'&gt;$file&lt;/span&gt;
+&lt;span class='k'&gt;done&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/10/opening-iterm-at-current-finder-location</id>
+   <link href="http://tomafro.net/2012/10/opening-iterm-at-current-finder-location"/>
+   <title>Opening iTerm at current Finder location</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I often download files, may it be from the web or from my e-mail program of choice (at work: sadly Outlook, at home Mail) and need to do stuff with it in the console.&lt;/p&gt;
+
+&lt;p&gt;To speed up this process, I&amp;#8217;ve written this small AppleScript. The ideas far outpace my abilities with AppleScript, so for now it only works in Finder (although it has stuff in it to prepare it to work universally, it currently doesn&amp;#8217;t). I thought I&amp;#8217;d share it anyway, so here it comes:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='applescript'&gt;&lt;span class='c'&gt;-- get active window&lt;/span&gt;
+&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;System Events&amp;quot;&lt;/span&gt;
+	&lt;span class='c'&gt;-- get the name of the frontmost application&lt;/span&gt;
+	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theApp&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='na'&gt;name&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nb'&gt;the&lt;/span&gt; &lt;span class='nb'&gt;first&lt;/span&gt; &lt;span class='nv'&gt;process&lt;/span&gt; &lt;span class='nb'&gt;whose&lt;/span&gt; &lt;span class='na'&gt;frontmost&lt;/span&gt; &lt;span class='ow'&gt;is&lt;/span&gt; &lt;span class='no'&gt;true&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;as &lt;/span&gt;&lt;span class='nc'&gt;text&lt;/span&gt;
+&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
+
+&lt;span class='c'&gt;-- debug&lt;/span&gt;
+&lt;span class='c'&gt;--tell application &amp;quot;Finder&amp;quot; to display dialog theApp&lt;/span&gt;
+
+
+&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='nv'&gt;theApp&lt;/span&gt;
+	&lt;span class='c'&gt;-- check if we have documents or, basically, Finder&lt;/span&gt;
+	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;documentCount&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;count&lt;/span&gt; &lt;span class='nb'&gt;documents&lt;/span&gt;
+	&lt;span class='c'&gt;-- if we have documents, select the currently open one&lt;/span&gt;
+	&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='nv'&gt;documentCount&lt;/span&gt; &lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt; &lt;span class='k'&gt;then&lt;/span&gt;
+		&lt;span class='c'&gt;-- fetch the document name&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theDocument&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='na'&gt;document&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFile&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='na'&gt;path&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;theDocument&lt;/span&gt;
+		&lt;span class='c'&gt;-- chop the file name to cd to the directory&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;tid&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;/&amp;quot;&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;text&lt;/span&gt; &lt;span class='nb'&gt;items&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;theFile&lt;/span&gt;
+		&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='nb'&gt;last&lt;/span&gt; &lt;span class='nb'&gt;item&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='ow'&gt;is&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class='k'&gt;then&lt;/span&gt; &lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;rest&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt;&lt;span class='p'&gt;))&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;quoted form&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;rest&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt;&lt;span class='p'&gt;))&lt;/span&gt; &lt;span class='k'&gt;as &lt;/span&gt;&lt;span class='nc'&gt;text&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;tid&lt;/span&gt;
+	&lt;span class='k'&gt;else&lt;/span&gt;
+		&lt;span class='k'&gt;using terms from&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Finder&amp;quot;&lt;/span&gt;
+			&lt;span class='c'&gt;-- no documents open. Here comes Finder ...&lt;/span&gt;
+			&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;POSIX&lt;/span&gt; &lt;span class='na'&gt;path&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='na'&gt;target&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='na'&gt;window&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt; &lt;span class='k'&gt;as&lt;/span&gt; &lt;span class='nv'&gt;alias&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+		&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;using terms from&lt;/span&gt;
+	&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;if&lt;/span&gt;
+&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
+
+
+&lt;span class='c'&gt;-- Now open in iTerm2&lt;/span&gt;
+&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;iTerm&amp;quot;&lt;/span&gt;
+	&lt;span class='nb'&gt;activate&lt;/span&gt;
+	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theTerm&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nb'&gt;make&lt;/span&gt; &lt;span class='nb'&gt;new&lt;/span&gt; &lt;span class='nv'&gt;terminal&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
+	&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nv'&gt;theTerm&lt;/span&gt;
+		&lt;span class='c'&gt;-- set size 	&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;number&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;columns&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='mi'&gt;132&lt;/span&gt;
+		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;number&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;rows&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='mi'&gt;50&lt;/span&gt;
+		&lt;span class='c'&gt;-- launch a default shell in a new tab in the same terminal &lt;/span&gt;
+		&lt;span class='nb'&gt;launch&lt;/span&gt; &lt;span class='nv'&gt;session&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Default Session&amp;quot;&lt;/span&gt;
+		&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;the&lt;/span&gt; &lt;span class='nb'&gt;last&lt;/span&gt; &lt;span class='nv'&gt;session&lt;/span&gt;
+			&lt;span class='c'&gt;-- cd to the directory&lt;/span&gt;
+			&lt;span class='nb'&gt;write&lt;/span&gt; &lt;span class='nb'&gt;text&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;cd &amp;quot;&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt;
+		&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
+	&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
+&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/09/command-line-openmeta-tagging-on-macos</id>
+   <link href="http://tomafro.net/2012/09/command-line-openmeta-tagging-on-macos"/>
+   <title>Command-Line openmeta tagging on MacOS</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I love tags. I want to use them more (I am a lazy ass), because when I use them I find myself finding the stuff I look for way easier. I use &lt;a href='http://www.caseapps.com/tags/'&gt;Tags&lt;/a&gt; and &lt;a href='http://www.stclairsoft.com/DefaultFolderX/'&gt;DefaultFolderX&lt;/a&gt; mainly for tagging, but when I am on the commandline (like most of the times) I always find it annoying to either use Tags or something else to add/remove/list tags.&lt;/p&gt;
+
+&lt;p&gt;That&amp;#8217;s why I wrote this little script to help me tagging my files/folders. It needs &lt;a href='http://code.google.com/p/openmeta/'&gt;openmeta&lt;/a&gt; and should be placed somewhere in your &lt;code&gt;$PATH&lt;/code&gt; for easier access (obviously):&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/usr/bin/env bash&lt;/span&gt;
+
+&lt;span class='c'&gt;#&lt;/span&gt;
+&lt;span class='c'&gt;# Frontend script for the openmeta commandline utility&lt;/span&gt;
+&lt;span class='c'&gt;#&lt;/span&gt;
+
+&lt;span class='k'&gt;function &lt;/span&gt;usage &lt;span class='o'&gt;{&lt;/span&gt;
+	&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Usage:&amp;quot;&lt;/span&gt;
+	&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;$0 [file|directory]&amp;quot;&lt;/span&gt;
+	&lt;span class='nb'&gt;echo&lt;/span&gt;
+&lt;span class='nb'&gt;	echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Specify one tag per line to add a tag, prepend a &amp;#39;-&amp;#39; to remove a tag&amp;quot;&lt;/span&gt;
+	&lt;span class='nb'&gt;exit &lt;/span&gt;0
+&lt;span class='o'&gt;}&lt;/span&gt;
+
+&lt;span class='nv'&gt;timestamp&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;$(&lt;/span&gt;date +%s&lt;span class='k'&gt;)&lt;/span&gt;
+&lt;span class='nv'&gt;dir&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='nv'&gt;$1&lt;/span&gt;
+&lt;span class='nv'&gt;qdir&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='nv'&gt;$PWD&lt;/span&gt;/&lt;span class='nv'&gt;$1&lt;/span&gt;
+
+openmeta -t -p &lt;span class='nv'&gt;$qdir&lt;/span&gt; | rev | cut -d&lt;span class='s2'&gt;&amp;quot; &amp;quot;&lt;/span&gt; -f 2- | rev &amp;gt;/var/tmp/tag_&lt;span class='nv'&gt;$timestamp&lt;/span&gt; 2&amp;gt;/dev/null
+&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt; &lt;span class='nv'&gt;$?&lt;/span&gt; -ne 133 &lt;span class='o'&gt;]&lt;/span&gt;; &lt;span class='k'&gt;then&lt;/span&gt;
+&lt;span class='k'&gt;	&lt;/span&gt;&lt;span class='nv'&gt;curtags&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;$(&lt;/span&gt;cat /var/tmp/tag_&lt;span class='nv'&gt;$timestamp&lt;/span&gt;&lt;span class='k'&gt;)&lt;/span&gt;
+	&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Current tags: $curtags&amp;quot;&lt;/span&gt;
+	&lt;span class='nb'&gt;echo&lt;/span&gt;
+&lt;span class='k'&gt;fi&lt;/span&gt;
+
+&lt;span class='c'&gt;# Exit if we have nothing to tag&lt;/span&gt;
+&lt;span class='o'&gt;[&lt;/span&gt; ! -d &lt;span class='nv'&gt;$qdir&lt;/span&gt; -a ! -f &lt;span class='nv'&gt;$qdir&lt;/span&gt; &lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&amp;amp;&lt;/span&gt; usage
+
+&lt;span class='k'&gt;while &lt;/span&gt;&lt;span class='nb'&gt;read&lt;/span&gt; -p &lt;span class='s2'&gt;&amp;quot;Tag: &amp;quot;&lt;/span&gt; line
+&lt;span class='k'&gt;do&lt;/span&gt;
+    &lt;span class='o'&gt;[&lt;/span&gt; -z &lt;span class='s2'&gt;&amp;quot;${line:-}&amp;quot;&lt;/span&gt; &lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class='nb'&gt;break&lt;/span&gt;
+&lt;span class='nb'&gt;    &lt;/span&gt;&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;${line:0:1}&amp;quot;&lt;/span&gt; &lt;span class='o'&gt;==&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;-&amp;quot;&lt;/span&gt; &lt;span class='o'&gt;]&lt;/span&gt;; &lt;span class='k'&gt;then&lt;/span&gt;
+&lt;span class='k'&gt;	    &lt;/span&gt;&lt;span class='nv'&gt;rmtags&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;$rmtags ${line:1}&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;else&lt;/span&gt;
+&lt;span class='k'&gt;	    &lt;/span&gt;&lt;span class='nv'&gt;newtags&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;$newtags $line&amp;quot;&lt;/span&gt;
+    &lt;span class='k'&gt;fi&lt;/span&gt;
+&lt;span class='k'&gt;done&lt;/span&gt;
+
+&lt;span class='nb'&gt;echo&lt;/span&gt;
+&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;_$rmtags&amp;quot;&lt;/span&gt; &lt;span class='o'&gt;==&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;_&amp;quot;&lt;/span&gt; &lt;span class='o'&gt;]&lt;/span&gt;; &lt;span class='k'&gt;then&lt;/span&gt;
+&lt;span class='k'&gt;	&lt;/span&gt;openmeta -a &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;newtags&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; -p &lt;span class='nv'&gt;$qdir&lt;/span&gt; | rev | cut -d&lt;span class='s2'&gt;&amp;quot; &amp;quot;&lt;/span&gt; -f 2- | rev
+&lt;span class='k'&gt;else&lt;/span&gt;
+&lt;span class='k'&gt;	for &lt;/span&gt;rmtag in &lt;span class='nv'&gt;$rmtags&lt;/span&gt;; &lt;span class='k'&gt;do&lt;/span&gt;
+&lt;span class='k'&gt;		&lt;/span&gt;&lt;span class='nv'&gt;curtags&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;$(&lt;/span&gt;&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='nv'&gt;$curtags&lt;/span&gt; | sed &lt;span class='s2'&gt;&amp;quot;s/$rmtag//g&amp;quot;&lt;/span&gt;&lt;span class='k'&gt;)&lt;/span&gt;
+	&lt;span class='k'&gt;done&lt;/span&gt;
+&lt;span class='k'&gt;	&lt;/span&gt;openmeta -s &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;curtags&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;newtags&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; -p &lt;span class='nv'&gt;$qdir&lt;/span&gt; | rev | cut -d&lt;span class='s2'&gt;&amp;quot; &amp;quot;&lt;/span&gt; -f 2- | rev
+&lt;span class='k'&gt;fi&lt;/span&gt;
+
+rm -f /var/tmp/tag_&lt;span class='nv'&gt;$timestamp&lt;/span&gt; &amp;amp;&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/05/x11-forwarding-to-a-mac</id>
+   <link href="http://tomafro.net/2012/05/x11-forwarding-to-a-mac"/>
+   <title>X11 Forwarding to a Mac</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I just tried to use X11 Forwarding from a RedHat 6 box to my Mac failing miserably.&lt;/p&gt;
+
+&lt;p&gt;You have to make sure to have the &lt;code&gt;xorg-x11-xauth.x86_64&lt;/code&gt; package installed on the RedHat box in order for MacOS to start the tunnel for X11 forwarding - otherwise it won&amp;#8217;t work &amp;#8230;&lt;/p&gt;
+
+&lt;p&gt;See the logs:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;debug1: Requesting X11 forwarding with authentication spoofing.
+...
+debug1: Remote: No xauth program; cannot forward with spoofing.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;After that X11 forwarding works like a charm :)&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion</id>
+   <link href="http://tomafro.net/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion"/>
+   <title>Connecting to an 802.1X Network on Mac OS 10.7 Lion</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I recently faced the challenge (yes, it&amp;#8217;s a &lt;em&gt;challenge&lt;/em&gt;) to connect to an 802.1X secured network from Mac OS 10.7. While normally the people responsible should provide you with a configuration profile for your Mac, that&amp;#8217;s actually not very often the case &amp;#8230;&lt;/p&gt;
+
+&lt;p&gt;After trying to connect, installing certificates into my Keychain, I ended up with the following thread on the Apple Support Community:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='https://discussions.apple.com/message/16164097#16164097'&gt;https://discussions.apple.com/message/16164097#16164097&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;The answer of DrVenture pretty much explains the procedure, but I&amp;#8217;d like to outline it here as well:&lt;/p&gt;
+
+&lt;p&gt;1. Download iPCU (iPhone Configuration Utility) from &lt;a href='http://support.apple.com/kb/DL1465'&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;2. Open iPCU from Applications / Utilities or via Finder&lt;/p&gt;
+
+&lt;p&gt;3. You screen will look like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;4. Select &lt;em&gt;Configuration Profiles&lt;/em&gt; from the pane on the lefthand side&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;5. Click on &lt;em&gt;New&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;6. Enter some required values in the &lt;em&gt;General&lt;/em&gt; section&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;7. Select the &lt;em&gt;Credentials&lt;/em&gt; section&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;8. Click on &lt;em&gt;Configure&lt;/em&gt; and select your network certificate (I used a base64 encoded certificate)&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;9. Now go back to the &lt;em&gt;Wi-Fi&lt;/em&gt; section (never mind, Wi-Fi works for both wireless and cable connection)&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;10. Now create a new Configuration. For a cable connection, specify any name as SSID, for a wireless connection - obviously - specify the &lt;em&gt;correct&lt;/em&gt; SSID&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;11. Now select the protocols you need to use. In my case it was TTLS and PEAP with MSCHAPv2 authentication&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;12. Move on to the &lt;em&gt;Authentication&lt;/em&gt; tab and put in your username and password (if needed). In case you need to present a certificate, go back to step 8 and import your &lt;em&gt;private key&lt;/em&gt; for this certificate. You should be able to select it in the dropdown underneath the &lt;em&gt;Password&lt;/em&gt; field.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;13. Last but not least navigate to the &lt;em&gt;Trust&lt;/em&gt; tab and activate the checkbox next to your network certificate you have to trust.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;14. After you&amp;#8217;ve done all that, you click on &lt;em&gt;Export&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;15. In the &lt;em&gt;Export Configuration Profile&lt;/em&gt; dialog you select &lt;em&gt;None&lt;/em&gt; as security and proceed by clicking &lt;em&gt;Export &amp;#8230;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;16. In the next dialog you just save the file somewhere on your harddisk&lt;/p&gt;
+
+&lt;p&gt;17. To import the configuration profile, just double-click the file from finder.&lt;/p&gt;
+
+&lt;p&gt;Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click &lt;em&gt;OK&lt;/em&gt;. You can check the status of your 802.1X connection from the &lt;em&gt;Network Preferences&lt;/em&gt;, allowing you to Connect, Disconnect and view some stats: &lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Hope it&amp;#8217;s helpful for anyone :)&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac</id>
+   <link href="http://tomafro.net/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac"/>
+   <title>Import Mail from Thunderbird to Outlook 2011 on Mac</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I recently got a Mac from my employer, and I&amp;#8217;d like to try using Outlook 2011 for Mac. That, however, requires all my emails from Thunderbird to be transferred to Outlook 2011. After barely clinging onto sanity trying to migrate, I finally found the following article which brought me (at least halfway) there:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://www.frontendeveloper.com/thunderbird_outlook/'&gt;http://www.frontendeveloper.com/thunderbird_outlook/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;However, the App mentioned to change the creator- and type-codes is only running on Rosetta (which of course isn&amp;#8217;t available on Lion). I exchanged FileType to the (not nearly as comfortable, but at least working) app called &lt;a href='http://www.macupdate.com/app/mac/17300/quick-change'&gt;Quick Change&lt;/a&gt;. You will have to use the following codes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Creator: ttxt&lt;/li&gt;
+
+&lt;li&gt;Type: TEXT&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;After that, and, renaming the files to mbx, I was able to import my mails into Outlook 2011.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/03/prevent-file-deletion-on-linux</id>
+   <link href="http://tomafro.net/2012/03/prevent-file-deletion-on-linux"/>
+   <title>Prevent file deletion on Linux</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;Note to self, before I google it another 25 times &amp;#8230; Here&amp;#8217;s how to prevent a file to be deleted using extended attributes on Linux:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    chattr +i &amp;lt;file&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;to check if it worked:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    lsattr &amp;lt;file&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;example:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;    &lt;span class='nv'&gt;$&amp;gt;&lt;/span&gt; sudo chattr +i testfile
+    &lt;span class='nv'&gt;$&amp;gt;&lt;/span&gt; lsattr testfile
+    ----i------------e- testfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2012/02/finding-only-parent-pids</id>
+   <link href="http://tomafro.net/2012/02/finding-only-parent-pids"/>
+   <title>Finding only parent PIDs</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;Having a process that spawns children of itself it can be hard to only find the parents &amp;#8230; this command is pretty weird looking, but actually works. You can achieve the same much easier if you want to use &amp;#8216;ps -ef | grep &amp;#8230;&amp;#8217;, but I wanted to stick with pgrep, so:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pgrep boe_crprocd.bin | egrep -v &amp;quot;$(pgrep boe_crprocd.bin -P &amp;quot;$(pgrep boe_crprocd.bin -d &amp;quot;,&amp;quot;)&amp;quot; -d &amp;quot;|&amp;quot;)&amp;quot;&lt;/code&gt;&lt;/pre&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2011/12/connecting-to-a-remote-db2-instance</id>
+   <link href="http://tomafro.net/2011/12/connecting-to-a-remote-db2-instance"/>
+   <title>Connecting to a remote DB2 instance</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;h1 id='preparing_the_db2_client'&gt;Preparing the DB2 Client&lt;/h1&gt;
+
+&lt;h2 id='on_windows'&gt;On Windows&lt;/h2&gt;
+
+&lt;p&gt;After the initial installation, to be able to connect using the command line, just run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db2cmd -i -w db2clpsetcp&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id='on_unix'&gt;On Unix&lt;/h2&gt;
+
+&lt;p&gt;Source the db2profile&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;. $HOME/sqllib/db2profile&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id='accessing_a_remote_database'&gt;Accessing a Remote Database&lt;/h1&gt;
+
+&lt;p&gt;To be able to access a remote database you have to catalog the node and the database.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db2 &amp;quot;catalog tcpip node remote remote remotehost server 50000&amp;quot;
+db2 &amp;quot;catalog database testdb as remotedb at node remote authentication server&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As an example for our internal DB2 test instance:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db2 &amp;quot;catalog tcpip node usphlesx remote usphlesxcab04.pgdev.sap.corp server 50000&amp;quot;
+db2 &amp;quot;catalog database sample as cab04smp at node usphlesx&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once you did that, you can list the open catalogs:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-
+db2 &amp;quot;list node directory&amp;quot;
+db2 &amp;quot;list database directory&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To uncatalog the node/database run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db2 &amp;quot;uncatalog database remotedb&amp;quot;
+db2 &amp;quot;uncatalog node remote&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id='further_reading'&gt;Further reading&lt;/h5&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href='http://publib.boulder.ibm.com/infocenter/db2luw/v9/nav/3_1_2_3'&gt;IBM&lt;/a&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;a href='http://sqlrelay.sourceforge.net/sqlrelay/gettingstarted/db2.html#accessingremote'&gt;SqlRelay&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2011/11/patching-rdesktop-to-be-compatible-with-windows-2008</id>
+   <link href="http://tomafro.net/2011/11/patching-rdesktop-to-be-compatible-with-windows-2008"/>
+   <title>Patching rdesktop to be compatible with Windows 2008</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html"></content>
+ </entry>
+ 
+</feed>

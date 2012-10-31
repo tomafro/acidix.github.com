@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Command-Line openmeta tagging on MacOS &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2012/09/command-line-openmeta-tagging-on-macos"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2012/09/command-line-openmeta-tagging-on-macos">Command-Line openmeta tagging on MacOS</a></h2>
+    <p>I love tags. I want to use them more (I am a lazy ass), because when I use them I find myself finding the stuff I look for way easier. I use <a href='http://www.caseapps.com/tags/'>Tags</a> and <a href='http://www.stclairsoft.com/DefaultFolderX/'>DefaultFolderX</a> mainly for tagging, but when I am on the commandline (like most of the times) I always find it annoying to either use Tags or something else to add/remove/list tags.</p>
+
+<p>That&#8217;s why I wrote this little script to help me tagging my files/folders. It needs <a href='http://code.google.com/p/openmeta/'>openmeta</a> and should be placed somewhere in your <code>$PATH</code> for easier access (obviously):</p>
+<div class='highlight'><pre><code class='bash'><span class='c'>#!/usr/bin/env bash</span>
+
+<span class='c'>#</span>
+<span class='c'># Frontend script for the openmeta commandline utility</span>
+<span class='c'>#</span>
+
+<span class='k'>function </span>usage <span class='o'>{</span>
+	<span class='nb'>echo</span> <span class='s2'>&quot;Usage:&quot;</span>
+	<span class='nb'>echo</span> <span class='s2'>&quot;$0 [file|directory]&quot;</span>
+	<span class='nb'>echo</span>
+<span class='nb'>	echo</span> <span class='s2'>&quot;Specify one tag per line to add a tag, prepend a &#39;-&#39; to remove a tag&quot;</span>
+	<span class='nb'>exit </span>0
+<span class='o'>}</span>
+
+<span class='nv'>timestamp</span><span class='o'>=</span><span class='k'>$(</span>date +%s<span class='k'>)</span>
+<span class='nv'>dir</span><span class='o'>=</span><span class='nv'>$1</span>
+<span class='nv'>qdir</span><span class='o'>=</span><span class='nv'>$PWD</span>/<span class='nv'>$1</span>
+
+openmeta -t -p <span class='nv'>$qdir</span> | rev | cut -d<span class='s2'>&quot; &quot;</span> -f 2- | rev &gt;/var/tmp/tag_<span class='nv'>$timestamp</span> 2&gt;/dev/null
+<span class='k'>if</span> <span class='o'>[</span> <span class='nv'>$?</span> -ne 133 <span class='o'>]</span>; <span class='k'>then</span>
+<span class='k'>	</span><span class='nv'>curtags</span><span class='o'>=</span><span class='k'>$(</span>cat /var/tmp/tag_<span class='nv'>$timestamp</span><span class='k'>)</span>
+	<span class='nb'>echo</span> <span class='s2'>&quot;Current tags: $curtags&quot;</span>
+	<span class='nb'>echo</span>
+<span class='k'>fi</span>
+
+<span class='c'># Exit if we have nothing to tag</span>
+<span class='o'>[</span> ! -d <span class='nv'>$qdir</span> -a ! -f <span class='nv'>$qdir</span> <span class='o'>]</span> <span class='o'>&amp;&amp;</span> usage
+
+<span class='k'>while </span><span class='nb'>read</span> -p <span class='s2'>&quot;Tag: &quot;</span> line
+<span class='k'>do</span>
+    <span class='o'>[</span> -z <span class='s2'>&quot;${line:-}&quot;</span> <span class='o'>]</span> <span class='o'>&amp;&amp;</span> <span class='nb'>break</span>
+<span class='nb'>    </span><span class='k'>if</span> <span class='o'>[</span> <span class='s2'>&quot;${line:0:1}&quot;</span> <span class='o'>==</span> <span class='s2'>&quot;-&quot;</span> <span class='o'>]</span>; <span class='k'>then</span>
+<span class='k'>	    </span><span class='nv'>rmtags</span><span class='o'>=</span><span class='s2'>&quot;$rmtags ${line:1}&quot;</span>
+    <span class='k'>else</span>
+<span class='k'>	    </span><span class='nv'>newtags</span><span class='o'>=</span><span class='s2'>&quot;$newtags $line&quot;</span>
+    <span class='k'>fi</span>
+<span class='k'>done</span>
+
+<span class='nb'>echo</span>
+<span class='k'>if</span> <span class='o'>[</span> <span class='s2'>&quot;_$rmtags&quot;</span> <span class='o'>==</span> <span class='s2'>&quot;_&quot;</span> <span class='o'>]</span>; <span class='k'>then</span>
+<span class='k'>	</span>openmeta -a <span class='k'>${</span><span class='nv'>newtags</span><span class='k'>}</span> -p <span class='nv'>$qdir</span> | rev | cut -d<span class='s2'>&quot; &quot;</span> -f 2- | rev
+<span class='k'>else</span>
+<span class='k'>	for </span>rmtag in <span class='nv'>$rmtags</span>; <span class='k'>do</span>
+<span class='k'>		</span><span class='nv'>curtags</span><span class='o'>=</span><span class='k'>$(</span><span class='nb'>echo</span> <span class='nv'>$curtags</span> | sed <span class='s2'>&quot;s/$rmtag//g&quot;</span><span class='k'>)</span>
+	<span class='k'>done</span>
+<span class='k'>	</span>openmeta -s <span class='k'>${</span><span class='nv'>curtags</span><span class='k'>}</span> <span class='k'>${</span><span class='nv'>newtags</span><span class='k'>}</span> -p <span class='nv'>$qdir</span> | rev | cut -d<span class='s2'>&quot; &quot;</span> -f 2- | rev
+<span class='k'>fi</span>
+
+rm -f /var/tmp/tag_<span class='nv'>$timestamp</span> &amp;&gt;/dev/null
+</code></pre>
+</div>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/09">25 September 2012</a></span>
+  <span class="tags"> &middot; <a href="/tags/Mac" rel="tag">Mac</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/10/opening-iterm-at-current-finder-location">Opening iTerm at current Finder location</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/10">23 October 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/10/opening-iterm-at-current-finder-location/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/05/x11-forwarding-to-a-mac">X11 Forwarding to a Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/05">23 May 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/05/x11-forwarding-to-a-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion">Connecting to an 802.1X Network on Mac OS 10.7 Lion</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/04">26 April 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection">CrashPlan stuck in *Waiting for Connection*</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">17 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm">MacOS 10.7: Wake reason RTC (Alarm)</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11"> 1 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+<div class="container"><div class="row">
+	<div class="twelvecol">
+		<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div></div></div>
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>

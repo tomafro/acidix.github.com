@@ -1,0 +1,15 @@
+--- 
+meta: 
+  pw_single_layout: "1"
+  _edit_last: "1"
+status: draft
+tags: []
+
+title: sed one-liners
+layout: page
+published: false
+type: page
+---
+# calculate the used shared memory segments
+    Bytes:  ipcs -m | sed '1,3d' | awk 'BEGIN {SUM=0} {SUM+=$5} END {print SUM}'
+    Number: ipcs -m | sed '1,3d' | sed '$d' | wc -l

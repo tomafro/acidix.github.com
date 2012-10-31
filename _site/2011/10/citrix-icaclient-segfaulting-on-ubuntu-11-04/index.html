@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Citrix ICAClient dumping core on Ubuntu 11.04 &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2011/10/citrix-icaclient-segfaulting-on-ubuntu-11-04"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2011/10/citrix-icaclient-segfaulting-on-ubuntu-11-04">Citrix ICAClient dumping core on Ubuntu 11.04</a></h2>
+    <p>After switching to Ubuntu 11.04 from Fedora 15 I noticed that I wasn&#8217;t able to connect to our internal Citrix environment using ICAClient. Having followed the usual documentation (listed below) I was presented with the following:</p>
+
+<pre><code>*** glibc detected *** /usr/lib/ICAClient/wfica: free(): invalid next size (fast): 0x09c6e8b0 ***
+      ======= Backtrace: =========
+      ...
+
+
+
+
+The process is actually core-dumping in libproxy.so:
+
+
+
+
+Program terminated with signal 11, Segmentation fault.
+      #0  0xf70d8f72 in nbc_connect () from /usr/lib/ICAClient/libproxy.so
+      (gdb) bt
+      #0  0xf70d8f72 in nbc_connect () from /usr/lib/ICAClient/libproxy.so
+      #1  0xf70cd4d6 in NullConnect () from /usr/lib/ICAClient/libproxy.so
+      #2  0xf70ce6cd in ProxyConnect () from /usr/lib/ICAClient/libproxy.so
+      #3  0xf70ce8b1 in PROXYconnect () from /usr/lib/ICAClient/libproxy.so
+      #4  0xf70d8764 in IPSTACKconnect () from /usr/lib/ICAClient/libproxy.so
+      #5  0x080c3757 in ?? ()
+      #6  0x080c2518 in ?? ()
+      #7  0xf70c094a in ?? () from /usr/lib/ICAClient/PDCRYPT1.DLL
+      #8  0x080c060a in WdSetInformation ()
+      #9  0x080ffd8a in wdConnect ()
+      #10 0x08100f9b in NCSbind ()
+      #11 0x08077d09 in OldMain ()
+      #12 0x08137f4a in PlatAppMain ()
+      #13 0x080feda6 in AppMain ()
+      #14 0x08137eda in main ()</code></pre>
+
+<p>However, Library dependencies on the libproxy.so looked fine:</p>
+
+<pre><code>$ ldd /usr/lib/ICAClient/libproxy.so
+      linux-gate.so.1 =&gt;  (0xf7732000)
+      libc.so.6 =&gt; /lib32/libc.so.6 (0xf7594000)
+      /lib/ld-linux.so.2 (0xf7733000)</code></pre>
+
+<p>In the strace output I could see it was trying to parse a proxy configuration - having already unset all proxy variables (http_proxy, https_proxy, ftp_proxy) I was wondering where he was trying to get the proxy configuration from. The following line was the important one:</p>
+
+<pre><code>[pid 15818] open(&quot;/home/i064850/.mozilla/firefox/cuqn88q3.default/prefs.js&quot;, O_RDONLY) = 5</code></pre>
+
+<p>It was actually trying to get my proxy configuration from my Firefox Preferences! While one could argue about this decision, it seems to cause my issue - because after moving the .mozilla folder, wfica was finally able to connect!</p>
+
+<p>In the end I found out that this is an issue if you use <strong>Automatic Proxy Configuration</strong> in Firefox together with the Citrix ICA Client. Once you either deactivate or manually specify the proxy setting, it magically works.</p>
+
+<p>I still have to find out where to submit a bug report for ICAClient - probably nowhere &#8230;</p>
+
+<p><span>Edit</span> Bug report <a href='http://forums.citrix.com/message.jspa?messageID=1585465#1585465'>posted</a></p>
+
+<p>References: <a href='https://help.ubuntu.com/community/CitrixICAClientHowTo'>The Ubuntu ICAClient HowTo</a></p>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/10"> 3 October 2011</a></span>
+  <span class="tags"> &middot; <a href="/tags/Linux" rel="tag">Linux</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/05/x11-forwarding-to-a-mac">X11 Forwarding to a Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/05">23 May 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/05/x11-forwarding-to-a-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/03/prevent-file-deletion-on-linux">Prevent file deletion on Linux</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/03">20 March 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/03/prevent-file-deletion-on-linux/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/patching-rdesktop-to-be-compatible-with-windows-2008">Patching rdesktop to be compatible with Windows 2008</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">30 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/patching-rdesktop-to-be-compatible-with-windows-2008/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/thunderbird-throwing-sec_error_unknown_issuer">Thunderbird throwing 'sec_error_unknown_issuer'</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">22 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/thunderbird-throwing-sec_error_unknown_issuer/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/gdm-starting-synergy-before-login">GDM: Starting Synergy before login</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">21 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/gdm-starting-synergy-before-login/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+<div class="container"><div class="row">
+	<div class="twelvecol">
+		<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div></div></div>
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>

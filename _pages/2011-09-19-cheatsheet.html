@@ -1,0 +1,365 @@
+--- 
+meta: 
+  pw_single_layout: "1"
+  _edit_last: "1"
+  dsq_thread_id: "419604265"
+status: publish
+tags: []
+
+title: Cheatsheet
+layout: page
+published: true
+type: page
+---
+[TOC]
+
+
+# Veritas Storage Foundation #
+
+### Veritas configuration ###
+Can be found in /etc/vx/volboot and is being initialized by running `vxdctl init`.
+
+However, without `vxconfigd` the command will fail, and without an initalized volboot file, `vxconfigd` will refuse to start. To work around this problem you can manually create the `volboot` file (well, at least half manually):
+      vxconfigd -m disable (transactions disabled)
+      vxdctl init
+
+
+This will create the `volboot` file with a default size of 512 byte. To enable transactions run:
+      vxdctl enable
+
+
+And to optimize the performance (initially, at least) do:
+      vxdctl initdmp
+      vxiod set 10
+
+
+The first command initializes the DMP (disk multipathing) subsystem to optimize access strategy and the second command will start 10 I/O daemons to handle the standard load on a system. We'll get to Tuning later :)
+
+
+### reconfig.d
+    In /etc/reconfig.d/ steht der aktuelle zustand des vxvm
+    Falls /etc/vx/reconfig.d/state.d/install-db existiert, startet kein VxVM
+    Deswegen: rm /etc/reconfig.d/state.d/install-db
+
+
+### Naming Scheme
+    Setzen mit vxddladm set namingscheme=ebn
+    Auslesen aus /etc/vx/dmppolicy.info
+
+
+### Default Diskgroup setze
+    vxdctl defaultdg adg
+    export VXVM_DEFAULTDG=adg
+
+
+### Volume anlegen mal manuell
+    vxmake -g adg sd adg00-01 disk=adg00 offset=0 len=1g
+    vxmake -g adg plex avol-01 sd=adg00-01
+    vxmake -g adg vol avol usetype=fsgen plex=avol-01
+    vxvol -g adg init active avol
+    vxvol -g adg start avol
+
+
+### Enclosure umbenennen
+    vxdmpadm setattr enclosure emc0 name=EMC1
+
+
+### Start all of the volumes on the new system and resync mirrors in the background:
+    vxrecover -g ABCdg -sb
+
+
+### "Failing" entfernen // clear failing state
+    vxedit -g db_dg set failing=off db_dg16
+
+
+### Disks neu scannen
+    vxdisk scandisks
+
+
+### Freier Speicher in Diskgroup // free space in diskgroup
+     vxassist -g [group] maxsize [layout=]
+
+
+### Volume inkl. FS vergrößern // grow volume with fs
+    vxresize -F vxfs -g [group] [volume] +20g
+
+
+### Plex löschen // delete plex (recursive, force)
+    vxedit -g db_dg -rf rm oracle_vol-02
+
+
+### Disk aus Veritas entfernen // Remove disk from vxvm
+    vxdisk rm disk
+
+
+### Gespiegelte Volume mit DCL Logging anlegen // create volume with dcl logging
+    vxassist -g dg_ora_pkr make v_ora_bin 20g layout=mirror,log logtype=dco fmr=on nmirror=1
+
+
+### DCO-Log mit integriertem DRL anlegen
+    vxsnap prepare mirrvol
+
+
+### Spiegel hinzufügen // attach mirror
+    vxassist -g dg_ora_pkr mirror v_ora_bin newvol
+
+
+### Weiteren Snap-Plex an Volume syncen, abtrennen (auch mehrere zu absolut der gleichen Zeit), Diskgruppe auftrennen
+    vxsnap addmir origvol
+    vxsnap make source=origvol/new=snapvol/plex=origvol-02 [source=origvol/new=snapvol/plex=origvol-02]
+    vxdg split adg exportdg snapvol
+    vxdg deport exportdg
+    DO BACKUP ON OTHER HOST
+    vxdg import exportdg
+    vxdg join exportdg adg
+    vxvol startall
+    REFRESHEN DES SNAPS
+    vxsnap refresh snapvol source=origvol
+
+
+### Dateisystemcheck ausführen (optional Full Consistency Check)
+    ncheck -t vxfs -o sector= /dev/vx/rdsk/adg/origvol (RDSK!!)
+    fsck -t vxfs [-o full] FILESYSTEM
+
+
+### Diskgroup anlegen // create dg
+    vxdg init [name] [diskname]=[physicalname]
+
+
+### Disk zu Diskgroup hinzufügen // add disk to dg
+    vxdg -g [group] adddisk [diskname]=[physicalname] { [diskname]=[physicalname] ... }
+
+
+### Plex zu Volume hinzufügen
+    vxplex att avol avol-02 &
+
+
+### Tasks anzeigen (Prozesse)
+    vxtask list
+
+
+### Volume löschen
+    vxedit -g diskgroup -rf rm volume
+
+
+### Plex entfernen // remove plex from volume
+    vxplex -g [diskgroup] dis [plex]
+
+
+### Disk aus Diskgroup entfernen // remove disk from diskgroup
+    vxdg -g db_dg rmdisk emc1_098c
+
+
+### DCO Log von Volume entfernen // remove dco log
+    vxassist -g [diskgroup] -f remove log [volume] logtype=dco
+
+
+### Volume umbenennen // rename volume
+    vxedit -g diskgroup rename from to
+    vxedit -g db_dg rename ologa_vol v_ora_ologa
+
+
+### Disk umbenennen // rename disk
+    vxedit -g dg_ora_pkr rename emc0_02a3 dg_ora_pkr_d2
+
+
+### Volume starten // start volume
+    vxvol -g diskgroup start v_ora_bin
+
+
+### Snapshot ersellen //
+    fsckptadm create 1434 /mnt2
+
+
+### Snapshot mounten
+    mount -t vxfs -o ckpt=1434 /dev/vx/dsk/adg/avol:1434 /snap0
+
+
+### FS Check
+    ncheck -t vxfs -o sector= /dev/vx/rdsk/adg/avol
+
+
+### Liste der freien Extents in Filesystem
+    fsadm -E /mnt2
+
+
+### Online Defragmentierung
+    fsadm -e /mnt2
+
+
+### Volume stoppen // stop volume
+    vxvol -g diskgroup stop v_ora_bin
+
+
+### Diskgroup deportieren // deport diskgroup
+    vxvol -g diskgroup stopall
+    vxdg deport diskgroup
+
+
+### Diskgroup umbenennen // rename diskgroup
+    vxvol -g diskgroup stopall
+    vxdg deport diskgroup
+    vxdg -n newname import diskgroup
+
+
+### Alle Diskgruppen anzeigen // list all dgs
+    vxdisk -o alldgs -e list
+
+
+### Veritas Volume Manager beenden // kill vxvm
+    vxconfigd -k
+
+
+### Und wieder starten // and start over
+    vxdctl enable
+
+
+### Relayout auf ncol=5
+    vxassist -g $DG relayout v_ora_sapdata1 layout=stripe ncol=5 stwidth=2048 dg_dbf_akr_d7 dg_dbf_akr_d8 dg_dbf_akr_d6 dg_dbf_akr_d9 dg_dbf_akr_d22 &
+    vxtask list
+    vxrelayout status v_ora_sapdata1
+    # Relayout stoppen:
+    vxtask abort $TASK_ID
+    # Führt zu gestopptem Relayout
+    vxrelaylout start v_ora_sapdata1
+    # startet wieder den relayout prozess
+    vxrelayout reverse v_ora_sapdata1
+    # stellt den ursprünglichen Volume-Zustand wieder her
+
+
+### Resize cocatinated volume
+    vxassist -g $DG maxgrow volumename
+    vxresize -g $DG v_sap_data +734191616
+
+
+### Resize (negativ) -- verkleinern
+    vxresize -g $DG v_sap_data -- -2m
+
+
+### Site-Records
+    # set site of disks based on enclosure
+    vxdisk -g dg_dbf_pkr settag site=RZ1 enclr:emc1
+    vxdisk -g dg_dbf_pkr settag site=RZ3 enclr:emc3
+    
+    # set local site
+    vxdctl set site=RZ1
+    
+    # tell the dg
+    vxdg -g dg_sap_pkr addsite RZ1
+    vxdg -g dg_sap_pkr addsite RZ3
+    
+    # enable site-read policy
+    vxvol -g dg_sap_pkr rdpol siteread v_sap_bin
+
+# Veritas Cluster Server
+
+### Beispiel llttab
+    /opt/VRTSllt/sample_llttab
+
+### Systemname setzen in
+    /etc/VRTSvcs/conf/sysname
+    und in llttab
+    set-node /etc/VRTSvcs/conf/sysname
+
+Falls LLT Transports nicht auf allen Nodes identische Interfaces, kann man dies über die Gültigkeit in der llttab gleich alten
+    link private eth2 0 ether 0xBABE -
+    link private eth1 1 ether 0xBABE -
+Danach kann man die llttab verteilen
+
+### LLT dynamisch ändern (nicht bootfest)
+    lltconfig -t private2 -d eth3 - ether - -
+
+### Empfohlen für llttab:
+Alle nicht verwendeten ausblenden
+    exclude (n+1)-31
+Checksummen
+    set-checksum 10
+
+### llt abfragen
+    lltstat
+    lltstat -vvn
+
+### gab konfigurieren
+    cat >/etc/gabtab
+    /sbin/gabconfig -c -n2
+    ^D
+    /etc/init.d/gab start
+
+### GAB Port membership anzeigen
+    $> gabconfig -a
+    Port a -- Membership
+    Port h -- HA Daemon
+
+### Manuelles seeding (GAB nach Neustart aller Cluster Nodes)
+    gabconfig -cx
+
+### Cluster Status
+    hastatus -sum
+
+### Konfiguration bootfest schreiben
+    haconf -dump -makero
+
+### Cluster konfigurieren
+Konfiguration öffnen
+    haconf -makerw
+ServiceGroup anlegen
+    hagrp -add DemoSG
+SystemList der SG anpassen (Hostname Prio, 0=MAXPRIO)
+    hagrp -modify DemoSG SystemList vltn250 0 vltn251 10
+Autostart Attribut auslesen
+    hagrp -value DemoSG AutoStart
+AutostartList Attribut auslesen u. setzen (Der Join welcher Maschine triggert den Autostart)
+    hagrp -value DemoSG AutoStartList
+    hagrp -modify DemoSG AutoStartList vltn250 vltn251
+Konfiguration schreiben
+    haconf -dump
+
+### Ressource hinzufügen
+    hares -add DemoSGDiskGroup DiskGroup DemoSG
+    hares -display DemoSGDiskGroup
+    hares -modify DemoSGDiskGroup DiskGroup adg
+    hares -modify DemoSGDiskGroup Enabled 1
+
+### RG schwenken
+     hagrp -switch DemoSG -to vltn251
+
+### Probe auf einem Host erzwingen
+    hares -probe DemoSGDiskGroup -sys vltn251
+
+### Faulted auf einem Host klären
+    hares -clear DemoSGDiskGroup -sys vltn251
+    hagrp -clear DemoSG
+
+### Retry Limit
+    hatype -modify DiskGroup RestartLimit 0
+bzw granulärer
+    hares -override DemoSGDiskGroup RestartLimit
+    hares -modify DemoSGDiskGroup RestartLimit 3
+    hares -undo DemoSGDiskGroup RestartLimit
+
+### Abhängigkeit definieren (DemoSGFileOnOff geht nur online wenn DemoSGDiskGroup online)
+    hares -link DemoSGFileOnOff DemoSGDiskGroup
+
+### Konfigurationsdatei manuell parsen
+    hacf -verify .
+Kreiert main.cmd (zum erzeugen des kompletten clusters)
+
+### Benutzer anlegen
+    hauser -add admin
+
+### Benutzer Admin-Gruppe hinzufügen
+    haclus -modify Administrators admin
+
+### Finde irgendwas, was unter Clusterkontrolle ist
+    hares -list Type=DiskGroup DiskGroup=~adg
+
+### Finde anhand State
+    hares -list State=FAULTED
+
+### Ha CLI Einschalten
+    haclus -modify HacliUserLevel COMMANDROOT
+    hacli -cmd "ls -l /tmp/"
+
+### Alle Resourcen einer Gruppe online nehmen
+    hagrp -enableresources NFSSG
+

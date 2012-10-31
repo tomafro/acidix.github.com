@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Connecting to an 802.1X Network on Mac OS 10.7 Lion &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion">Connecting to an 802.1X Network on Mac OS 10.7 Lion</a></h2>
+    <p>I recently faced the challenge (yes, it&#8217;s a <em>challenge</em>) to connect to an 802.1X secured network from Mac OS 10.7. While normally the people responsible should provide you with a configuration profile for your Mac, that&#8217;s actually not very often the case &#8230;</p>
+
+<p>After trying to connect, installing certificates into my Keychain, I ended up with the following thread on the Apple Support Community:</p>
+
+<p><a href='https://discussions.apple.com/message/16164097#16164097'>https://discussions.apple.com/message/16164097#16164097</a></p>
+
+<p>The answer of DrVenture pretty much explains the procedure, but I&#8217;d like to outline it here as well:</p>
+
+<p>1. Download iPCU (iPhone Configuration Utility) from <a href='http://support.apple.com/kb/DL1465'>here</a></p>
+
+<p>2. Open iPCU from Applications / Utilities or via Finder</p>
+
+<p>3. You screen will look like this:</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' /></a></p>
+
+<p>4. Select <em>Configuration Profiles</em> from the pane on the lefthand side</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' /></a></p>
+
+<p>5. Click on <em>New</em></p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' /></a></p>
+
+<p>6. Enter some required values in the <em>General</em> section</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' /></a></p>
+
+<p>7. Select the <em>Credentials</em> section</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' /></a></p>
+
+<p>8. Click on <em>Configure</em> and select your network certificate (I used a base64 encoded certificate)</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' /></a></p>
+
+<p>9. Now go back to the <em>Wi-Fi</em> section (never mind, Wi-Fi works for both wireless and cable connection)</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' /></a></p>
+
+<p>10. Now create a new Configuration. For a cable connection, specify any name as SSID, for a wireless connection - obviously - specify the <em>correct</em> SSID</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' /></a></p>
+
+<p>11. Now select the protocols you need to use. In my case it was TTLS and PEAP with MSCHAPv2 authentication</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' /></a></p>
+
+<p>12. Move on to the <em>Authentication</em> tab and put in your username and password (if needed). In case you need to present a certificate, go back to step 8 and import your <em>private key</em> for this certificate. You should be able to select it in the dropdown underneath the <em>Password</em> field.</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' /></a></p>
+
+<p>13. Last but not least navigate to the <em>Trust</em> tab and activate the checkbox next to your network certificate you have to trust.</p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' /></a></p>
+
+<p>14. After you&#8217;ve done all that, you click on <em>Export</em></p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' /></a></p>
+
+<p>15. In the <em>Export Configuration Profile</em> dialog you select <em>None</em> as security and proceed by clicking <em>Export &#8230;</em></p>
+
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' /></a></p>
+
+<p>16. In the next dialog you just save the file somewhere on your harddisk</p>
+
+<p>17. To import the configuration profile, just double-click the file from finder.</p>
+
+<p>Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click <em>OK</em>. You can check the status of your 802.1X connection from the <em>Network Preferences</em>, allowing you to Connect, Disconnect and view some stats: <a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' /></a></p>
+
+<p>Hope it&#8217;s helpful for anyone :)</p>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/04">26 April 2012</a></span>
+  <span class="tags"> &middot; <a href="/tags/Lion" rel="tag">Lion</a> &middot; <a href="/tags/Mac" rel="tag">Mac</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/10/opening-iterm-at-current-finder-location">Opening iTerm at current Finder location</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/10">23 October 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/10/opening-iterm-at-current-finder-location/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/09/command-line-openmeta-tagging-on-macos">Command-Line openmeta tagging on MacOS</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/09">25 September 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/09/command-line-openmeta-tagging-on-macos/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/05/x11-forwarding-to-a-mac">X11 Forwarding to a Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/05">23 May 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/05/x11-forwarding-to-a-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection">CrashPlan stuck in *Waiting for Connection*</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">17 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm">MacOS 10.7: Wake reason RTC (Alarm)</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11"> 1 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>

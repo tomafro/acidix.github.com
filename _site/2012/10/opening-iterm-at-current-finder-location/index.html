@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Opening iTerm at current Finder location &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2012/10/opening-iterm-at-current-finder-location"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2012/10/opening-iterm-at-current-finder-location">Opening iTerm at current Finder location</a></h2>
+    <p>I often download files, may it be from the web or from my e-mail program of choice (at work: sadly Outlook, at home Mail) and need to do stuff with it in the console.</p>
+
+<p>To speed up this process, I&#8217;ve written this small AppleScript. The ideas far outpace my abilities with AppleScript, so for now it only works in Finder (although it has stuff in it to prepare it to work universally, it currently doesn&#8217;t). I thought I&#8217;d share it anyway, so here it comes:</p>
+<div class='highlight'><pre><code class='applescript'><span class='c'>-- get active window</span>
+<span class='k'>tell</span> <span class='nb'>application</span> <span class='s2'>&quot;System Events&quot;</span>
+	<span class='c'>-- get the name of the frontmost application</span>
+	<span class='k'>set</span> <span class='nv'>theApp</span> <span class='k'>to</span> <span class='p'>(</span><span class='na'>name</span> <span class='k'>of</span> <span class='nb'>the</span> <span class='nb'>first</span> <span class='nv'>process</span> <span class='nb'>whose</span> <span class='na'>frontmost</span> <span class='ow'>is</span> <span class='no'>true</span><span class='p'>)</span> <span class='k'>as </span><span class='nc'>text</span>
+<span class='k'>end</span> <span class='k'>tell</span>
+
+<span class='c'>-- debug</span>
+<span class='c'>--tell application &quot;Finder&quot; to display dialog theApp</span>
+
+
+<span class='k'>tell</span> <span class='nb'>application</span> <span class='nv'>theApp</span>
+	<span class='c'>-- check if we have documents or, basically, Finder</span>
+	<span class='k'>set</span> <span class='nv'>documentCount</span> <span class='k'>to</span> <span class='nb'>count</span> <span class='nb'>documents</span>
+	<span class='c'>-- if we have documents, select the currently open one</span>
+	<span class='k'>if</span> <span class='nv'>documentCount</span> <span class='o'>&gt;</span> <span class='mi'>0</span> <span class='k'>then</span>
+		<span class='c'>-- fetch the document name</span>
+		<span class='k'>set</span> <span class='nv'>theDocument</span> <span class='k'>to</span> <span class='na'>document</span> <span class='mi'>1</span>
+		<span class='k'>set</span> <span class='nv'>theFile</span> <span class='k'>to</span> <span class='na'>path</span> <span class='k'>of</span> <span class='nv'>theDocument</span>
+		<span class='c'>-- chop the file name to cd to the directory</span>
+		<span class='k'>set</span> <span class='nv'>tid</span> <span class='k'>to</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span>
+		<span class='k'>set</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span> <span class='k'>to</span> <span class='s2'>&quot;/&quot;</span>
+		<span class='k'>set</span> <span class='nv'>chunks</span> <span class='k'>to</span> <span class='nb'>text</span> <span class='nb'>items</span> <span class='k'>of</span> <span class='nv'>theFile</span>
+		<span class='k'>if</span> <span class='nb'>last</span> <span class='nb'>item</span> <span class='k'>of</span> <span class='nv'>chunks</span> <span class='ow'>is</span> <span class='s2'>&quot;&quot;</span> <span class='k'>then</span> <span class='k'>set</span> <span class='nv'>chunks</span> <span class='k'>to</span> <span class='nv'>reverse</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>rest</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='nv'>chunks</span><span class='p'>))</span>
+		<span class='k'>set</span> <span class='nv'>theFilePath</span> <span class='k'>to</span> <span class='nb'>quoted form</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>rest</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='nv'>chunks</span><span class='p'>))</span> <span class='k'>as </span><span class='nc'>text</span><span class='p'>)</span>
+		<span class='k'>set</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span> <span class='k'>to</span> <span class='nv'>tid</span>
+	<span class='k'>else</span>
+		<span class='k'>using terms from</span> <span class='nb'>application</span> <span class='s2'>&quot;Finder&quot;</span>
+			<span class='c'>-- no documents open. Here comes Finder ...</span>
+			<span class='k'>set</span> <span class='nv'>theFilePath</span> <span class='k'>to</span> <span class='nv'>POSIX</span> <span class='na'>path</span> <span class='k'>of</span> <span class='p'>(</span><span class='na'>target</span> <span class='k'>of</span> <span class='na'>window</span> <span class='mi'>1</span> <span class='k'>as</span> <span class='nv'>alias</span><span class='p'>)</span>
+		<span class='k'>end</span> <span class='k'>using terms from</span>
+	<span class='k'>end</span> <span class='k'>if</span>
+<span class='k'>end</span> <span class='k'>tell</span>
+
+
+<span class='c'>-- Now open in iTerm2</span>
+<span class='k'>tell</span> <span class='nb'>application</span> <span class='s2'>&quot;iTerm&quot;</span>
+	<span class='nb'>activate</span>
+	<span class='k'>set</span> <span class='nv'>theTerm</span> <span class='k'>to</span> <span class='p'>(</span><span class='nb'>make</span> <span class='nb'>new</span> <span class='nv'>terminal</span><span class='p'>)</span>
+	<span class='k'>tell</span> <span class='nv'>theTerm</span>
+		<span class='c'>-- set size 	</span>
+		<span class='k'>set</span> <span class='nv'>number</span> <span class='k'>of</span> <span class='nv'>columns</span> <span class='k'>to</span> <span class='mi'>132</span>
+		<span class='k'>set</span> <span class='nv'>number</span> <span class='k'>of</span> <span class='nv'>rows</span> <span class='k'>to</span> <span class='mi'>50</span>
+		<span class='c'>-- launch a default shell in a new tab in the same terminal </span>
+		<span class='nb'>launch</span> <span class='nv'>session</span> <span class='s2'>&quot;Default Session&quot;</span>
+		<span class='k'>tell</span> <span class='nb'>the</span> <span class='nb'>last</span> <span class='nv'>session</span>
+			<span class='c'>-- cd to the directory</span>
+			<span class='nb'>write</span> <span class='nb'>text</span> <span class='s2'>&quot;cd &quot;</span> <span class='o'>&amp;</span> <span class='nv'>theFilePath</span>
+		<span class='k'>end</span> <span class='k'>tell</span>
+	<span class='k'>end</span> <span class='k'>tell</span>
+<span class='k'>end</span> <span class='k'>tell</span>
+</code></pre>
+</div>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/10">23 October 2012</a></span>
+  <span class="tags"> &middot; <a href="/tags/Mac" rel="tag">Mac</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/09/command-line-openmeta-tagging-on-macos">Command-Line openmeta tagging on MacOS</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/09">25 September 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/09/command-line-openmeta-tagging-on-macos/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/05/x11-forwarding-to-a-mac">X11 Forwarding to a Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/05">23 May 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/05/x11-forwarding-to-a-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion">Connecting to an 802.1X Network on Mac OS 10.7 Lion</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/04">26 April 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/04/connecting-to-an-802-1x-network-on-mac-os-10-7-lion/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection">CrashPlan stuck in *Waiting for Connection*</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">17 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/crashplan-stuck-in-waiting-for-connection/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm">MacOS 10.7: Wake reason RTC (Alarm)</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11"> 1 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/macos-10-7-wake-reason-rtc-alarm/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+<div class="container"><div class="row">
+	<div class="twelvecol">
+		<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div></div></div>
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>

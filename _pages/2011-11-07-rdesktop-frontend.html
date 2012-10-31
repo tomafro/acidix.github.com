@@ -1,0 +1,43 @@
+--- 
+meta: 
+  pw_single_layout: "1"
+  _edit_last: "1"
+status: draft
+tags: []
+
+title: RDesktop FrontEnd
+layout: page
+published: false
+type: page
+---
+<pre>#!/bin/bash
+
+showres=1
+history="/var/tmp/rdesktop.history"
+maxhistory=20
+
+if [ "_$1" != "_" ];
+then
+   targetsys=$1
+else
+    targetsys=$(zenity --entry --title "Enter target system" --text "Insert your choice." $(tac $history | tr "\n" " "))
+fi
+
+[ "_$targetsys" == "_" ] &amp;&amp; exit 1
+
+[ $(grep $targetsys $history; echo $?) -eq 1 ] &amp;&amp; echo $targetsys &gt;&gt;$history
+[ $(cat $history | wc -l) -gt $maxhistory ] &amp;&amp; tail -n$maxhistory $history &gt;$history
+
+if [ $(xrandr | grep "*" | wc -l) -gt 1 -o $showres -eq 1 ];
+then
+   targetres=$(zenity --title "Select screen resolution" --list --text "Select target screen resolution" --print-column=1 --column "Resolution" $(xrandr | grep "*" | cut -d" " -f4 | while read line; do printf "%s " $line; done) --editable)
+else
+   targetres=$(xrandr | grep "*" | cut -d" " -f4)
+fi
+
+if [ "_${targetsys}" != "_" -a "_${targetres}" != "_" ];
+then
+  rdesktop -u Administrator -g ${targetres} -r disk:i064850=/home ${targetsys}
+else
+  exit 1
+fi</pre>

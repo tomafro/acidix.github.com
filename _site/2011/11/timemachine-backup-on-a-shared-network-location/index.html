@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>TimeMachine Backup on a Shared Network location &middot; nxhelp.com</title>
+  <meta name="verify-v1" content="ADnFYWq1MeVbf8+qNPe/GZTvcEsDgOCgWTWrUIPakz8=" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <link rel="stylesheet" href="/css/1140.css" type="text/css" />
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+  <script type="text/javascript" src="//use.typekit.net/gws4kmw.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  <link rel="alternate" type="application/atom+xml" href="http://nxhelp.com/atom.xml" />
+  <link rel="canonical" href="http://nxhelp.com/2011/11/timemachine-backup-on-a-shared-network-location"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1103395-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
+          'http://www') + '.google-analytics.com/ga.js';
+      ga.setAttribute('async', 'true');
+      document.documentElement.firstChild.appendChild(ga);
+    })();
+  </script>
+  
+  <meta name="viewport" content="width=850" />
+  <link rel="stylesheet" media="screen and (max-device-width: 480px)" href="/css/iphone.css" type="text/css"/>
+</head>
+<body>  
+<div id="header" class="menubar">
+	<div class="container">
+		<div class="row">
+	<div class="twelvecol">
+		<a class="name" href="/">nxhelp.com</a> &middot; <a href="/about">about</a> &middot; <a href="http://github.com/acidix">on github</a> &middot; <a href="http://delicious.com/acidix_net">on pinboard</a> &middot; <a href="http://twitter.com/acidix_net">on twitter</a>
+	</div>
+</div>
+
+	</div>
+</div>
+<div id="main">
+      
+<div class="container">
+	<div class="row">
+<div class="post twelvecol">
+  <div class="content">
+    <h2 class="title"><a href="/2011/11/timemachine-backup-on-a-shared-network-location">TimeMachine Backup on a Shared Network location</a></h2>
+    <p>Having my iMac setup for TimeMachine I wanted to do the same for the new Macbook Air. While I don&#8217;t want to run around with TimeMachine Backup drive all the time (used to do that for my last MacBook, <em>bad</em> decision) I wanted to setup TimeMachine Backup to my iMac on the same external HDD.</p>
+
+<p>Here&#8217;s the link that helped me doing that: <a title='Ease Time Machine networked backups' href='http://hints.macworld.com/article.php?story=20071110145136486'>Ease Time Machine networked backups</a></p>
+
+<p>The workflow:</p>
+
+<h5 id='on_the_imac'>On the iMac</h5>
+
+<ol>
+<li>Connect the TimeMachine Drive</li>
+
+<li>Under <em>System Preferences</em>, <em>Sharing</em> share the drive</li>
+</ol>
+
+<h5 id='on_the_macbook_air'>On the Macbook Air</h5>
+
+<ol>
+<li>Connect to the shared drive</li>
+
+<li>Setup TimeMachine to use the drive</li>
+
+<li>Start a backup</li>
+
+<li>When &#8221;<em>Preparing backup …</em>&#8221; turns into the actual backup, <em>Cancel</em></li>
+
+<li>Mount the newly created <code>sparsebundle</code> file by double-clicking</li>
+
+<li>Open <em>DiskUtility</em> and select the <code>sparsebundle</code> file</li>
+
+<li>Select the <em>Partition</em> tab</li>
+
+<li>Shrink the size of your Time Machine destination as needed</li>
+
+<li>Click Apply</li>
+</ol>
+
+<p>Alright, now the Macbook Air is backing up to the Disk via the <code>sparseimage</code> file and over the network. Now the tricky part begins. Getting the iMac to backup to a <code>sparseimage</code> file locally won&#8217;t work. You have to follow these steps:</p>
+
+<h5 id='on_the_macbook_air'>On the Macbook Air</h5>
+
+<ol>
+<li>Connect the external drive to the Macbook Air</li>
+
+<li>In <em>System Preferences</em> select <em>Sharing</em></li>
+
+<li>Turn on <em>File Sharing</em> and select the external drive to be shared</li>
+</ol>
+
+<h5 id='on_the_imac'>On the iMac</h5>
+
+<ol>
+<li>Connect to the newly created share and navigate to the Time Machine drive</li>
+
+<li>Open Time Machine preferences and select the Time Machine Share</li>
+
+<li>Let Time Machine create another <code>sparsebundle</code> file for the iMac</li>
+
+<li>Once that&#8217;s done cancel the backup again and mount the bundle to shrink it (see top)</li>
+</ol>
+
+<h5 id='on_the_macbook_air'>On the Macbook Air</h5>
+
+<ol>
+<li>Turn off File Sharing to disconnect the drive</li>
+
+<li>Connect the drive to the iMac again</li>
+</ol>
+
+<h5 id='on_the_imac'>On the iMac</h5>
+
+<ol>
+<li>Open Time Machine Preferences</li>
+
+<li>Choose Backup Disk and select the local disk</li>
+
+<li>Happy Time Machine&#8217;ing! The <code>sparsebundle</code> on the disk will be used even though it&#8217;s attached locally!</li>
+</ol>
+  </div>
+  <div class="meta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">16 November 2011</a></span>
+  <span class="tags"> &middot; <a href="/tags/backup" rel="tag">backup</a> &middot; <a href="/tags/mac" rel="tag">mac</a> &middot; <a href="/tags/timemachine" rel="tag">timemachine</a></span>
+  
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container" id="related"><div class="row">
+<div class="twelvecol">
+<h2>Related posts:</h2>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac">Import Mail from Thunderbird to Outlook 2011 on Mac</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2012/03">27 March 2012</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+  <div class="row">
+  <div class="twelvecol">
+  <h3 class="title"><a href="/2011/11/mastering-the-mac-app-store-1-app-doesnt-install">Mastering the Mac App Store #1: App doesn't install</a></h3>
+  <div class="oldmeta">
+  <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 
+  <span class="date"><a href="/2011/11">30 November 2011</a></span>
+  <span class="tags"></span> &middot; 
+  <span class="comments"><a href="/2011/11/mastering-the-mac-app-store-1-app-doesnt-install/#disqus_thread">Comments</a></span>
+  </div>
+  </div>
+  </div>
+
+</div>
+</div></div>
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+
+
+
+<div class="container"><div class="row">
+	<div class="twelvecol">
+		<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'nxhelp'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div></div></div>
+
+
+
+    </div>
+<div class="container"><div class="row"><div class="twelvecol footer">
+Copyright 2012 - Thomas Uhde
+</div></div></div>
+</body>	
+</html>
