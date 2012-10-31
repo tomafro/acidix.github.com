@@ -8,11 +8,11 @@ tags:
 - Coding
 - Linux
 ---
-Lots of people may know the famous rdesktop bug that keeps you from transferring files from mapped drives on your local machine. The error shown is:^M
+Lots of people may know the famous rdesktop bug that keeps you from transferring files from mapped drives on your local machine. The error shown is:
 
 {% highlight bash %}
-Path is not accessible. You might not have permission to use this ^M
-network resource. Contact the administrator of this server to find ^M
+Path is not accessible. You might not have permission to use this 
+network resource. Contact the administrator of this server to find 
 out if your have access permissions.
 
 Attempt to access an invalid address.
@@ -22,7 +22,7 @@ While there is a patch for rdesktop since 2009, it doesn't seem to make it into 
 
 So, I'm patching it myself ... Here are the steps:
 
-#### Install all build dependencies: ####
+#### Install all build dependencies ####
 {% highlight bash %}
 apt-get build-dep rdesktop
 {% endhighlight %}
