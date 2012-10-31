@@ -2,104 +2,12 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
  <title>Tom Ward</title>
  <link href="http://tomafro.net/atom.xml" rel="self"/>
- <updated>2012-10-23T23:43:16+01:00</updated>
+ <updated>2012-10-31T15:14:32+00:00</updated>
  <id>http://tomafro.net/</id>
  <author>
    <name>Tom Ward</name>
    <email>tom@popdog.net</email>
  </author>
- 
- <entry>
-   <id>http://tomafro.net/2012/10/swap-audio-tracks-in-xvid</id>
-   <link href="http://tomafro.net/2012/10/swap-audio-tracks-in-xvid"/>
-   <title>Swap audio tracks in Xvid file</title>
-   <author>
-     <name>Tom Ward</name>
-     <email>tom@popdog.net</email>
-   </author>
-   <content type="html">&lt;p&gt;Well, this is more or less personal. Still interesting. Needed to batch-swap audio track of some video files (stuff I ripped from DVDs to play in iTunes, and stupidly I selected the german audio channel to play first). When I couldn&amp;#8217;t find a tool doing that, I decided to just explore how it&amp;#8217;s done with ffmpeg. And here&amp;#8217;s the outcome:&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/bin/bash&lt;/span&gt;
-
-&lt;span class='nv'&gt;filelist&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='nv'&gt;$@&lt;/span&gt;
-&lt;span class='nv'&gt;OLDVAL&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;1
-
-&lt;span class='c'&gt;# list the available tracks&lt;/span&gt;
-ffmpeg -i &lt;span class='nv'&gt;$1&lt;/span&gt; 2&amp;gt;&amp;amp;1 | grep Stream
-
-&lt;span class='nb'&gt;printf&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;%s [%s]: &amp;quot;&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Enter audio track to use: &amp;quot;&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;$OLDVAL&amp;quot;&lt;/span&gt;
-&lt;span class='nb'&gt;read &lt;/span&gt;NEWVAL
-
-&lt;span class='k'&gt;for &lt;/span&gt;file in &lt;span class='nv'&gt;$filelist&lt;/span&gt;; &lt;span class='k'&gt;do&lt;/span&gt;
-&lt;span class='k'&gt;	&lt;/span&gt;ffmpeg -i &lt;span class='nv'&gt;$file&lt;/span&gt; -map 0:0 -map 0:&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;NEWVAL&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; -vcodec copy swap_&lt;span class='nv'&gt;$file&lt;/span&gt;
-&lt;span class='k'&gt;done&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content>
- </entry>
- 
- <entry>
-   <id>http://tomafro.net/2012/10/opening-iterm-at-current-finder-location</id>
-   <link href="http://tomafro.net/2012/10/opening-iterm-at-current-finder-location"/>
-   <title>Opening iTerm at current Finder location</title>
-   <author>
-     <name>Tom Ward</name>
-     <email>tom@popdog.net</email>
-   </author>
-   <content type="html">&lt;p&gt;I often download files, may it be from the web or from my e-mail program of choice (at work: sadly Outlook, at home Mail) and need to do stuff with it in the console.&lt;/p&gt;
-
-&lt;p&gt;To speed up this process, I&amp;#8217;ve written this small AppleScript. The ideas far outpace my abilities with AppleScript, so for now it only works in Finder (although it has stuff in it to prepare it to work universally, it currently doesn&amp;#8217;t). I thought I&amp;#8217;d share it anyway, so here it comes:&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='applescript'&gt;&lt;span class='c'&gt;-- get active window&lt;/span&gt;
-&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;System Events&amp;quot;&lt;/span&gt;
-	&lt;span class='c'&gt;-- get the name of the frontmost application&lt;/span&gt;
-	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theApp&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='na'&gt;name&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nb'&gt;the&lt;/span&gt; &lt;span class='nb'&gt;first&lt;/span&gt; &lt;span class='nv'&gt;process&lt;/span&gt; &lt;span class='nb'&gt;whose&lt;/span&gt; &lt;span class='na'&gt;frontmost&lt;/span&gt; &lt;span class='ow'&gt;is&lt;/span&gt; &lt;span class='no'&gt;true&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;as &lt;/span&gt;&lt;span class='nc'&gt;text&lt;/span&gt;
-&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
-
-&lt;span class='c'&gt;-- debug&lt;/span&gt;
-&lt;span class='c'&gt;--tell application &amp;quot;Finder&amp;quot; to display dialog theApp&lt;/span&gt;
-
-
-&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='nv'&gt;theApp&lt;/span&gt;
-	&lt;span class='c'&gt;-- check if we have documents or, basically, Finder&lt;/span&gt;
-	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;documentCount&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;count&lt;/span&gt; &lt;span class='nb'&gt;documents&lt;/span&gt;
-	&lt;span class='c'&gt;-- if we have documents, select the currently open one&lt;/span&gt;
-	&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='nv'&gt;documentCount&lt;/span&gt; &lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt; &lt;span class='k'&gt;then&lt;/span&gt;
-		&lt;span class='c'&gt;-- fetch the document name&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theDocument&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='na'&gt;document&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFile&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='na'&gt;path&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;theDocument&lt;/span&gt;
-		&lt;span class='c'&gt;-- chop the file name to cd to the directory&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;tid&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;/&amp;quot;&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;text&lt;/span&gt; &lt;span class='nb'&gt;items&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;theFile&lt;/span&gt;
-		&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='nb'&gt;last&lt;/span&gt; &lt;span class='nb'&gt;item&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='ow'&gt;is&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class='k'&gt;then&lt;/span&gt; &lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;rest&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt;&lt;span class='p'&gt;))&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nb'&gt;quoted form&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;rest&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;reverse&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;chunks&lt;/span&gt;&lt;span class='p'&gt;))&lt;/span&gt; &lt;span class='k'&gt;as &lt;/span&gt;&lt;span class='nc'&gt;text&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='no'&gt;AppleScript&lt;/span&gt;&amp;#39;s &lt;span class='no'&gt;text item delimiters&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;tid&lt;/span&gt;
-	&lt;span class='k'&gt;else&lt;/span&gt;
-		&lt;span class='k'&gt;using terms from&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Finder&amp;quot;&lt;/span&gt;
-			&lt;span class='c'&gt;-- no documents open. Here comes Finder ...&lt;/span&gt;
-			&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='nv'&gt;POSIX&lt;/span&gt; &lt;span class='na'&gt;path&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='na'&gt;target&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='na'&gt;window&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt; &lt;span class='k'&gt;as&lt;/span&gt; &lt;span class='nv'&gt;alias&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
-		&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;using terms from&lt;/span&gt;
-	&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;if&lt;/span&gt;
-&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
-
-
-&lt;span class='c'&gt;-- Now open in iTerm2&lt;/span&gt;
-&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;application&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;iTerm&amp;quot;&lt;/span&gt;
-	&lt;span class='nb'&gt;activate&lt;/span&gt;
-	&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;theTerm&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nb'&gt;make&lt;/span&gt; &lt;span class='nb'&gt;new&lt;/span&gt; &lt;span class='nv'&gt;terminal&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt;
-	&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nv'&gt;theTerm&lt;/span&gt;
-		&lt;span class='c'&gt;-- set size 	&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;number&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;columns&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='mi'&gt;132&lt;/span&gt;
-		&lt;span class='k'&gt;set&lt;/span&gt; &lt;span class='nv'&gt;number&lt;/span&gt; &lt;span class='k'&gt;of&lt;/span&gt; &lt;span class='nv'&gt;rows&lt;/span&gt; &lt;span class='k'&gt;to&lt;/span&gt; &lt;span class='mi'&gt;50&lt;/span&gt;
-		&lt;span class='c'&gt;-- launch a default shell in a new tab in the same terminal &lt;/span&gt;
-		&lt;span class='nb'&gt;launch&lt;/span&gt; &lt;span class='nv'&gt;session&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Default Session&amp;quot;&lt;/span&gt;
-		&lt;span class='k'&gt;tell&lt;/span&gt; &lt;span class='nb'&gt;the&lt;/span&gt; &lt;span class='nb'&gt;last&lt;/span&gt; &lt;span class='nv'&gt;session&lt;/span&gt;
-			&lt;span class='c'&gt;-- cd to the directory&lt;/span&gt;
-			&lt;span class='nb'&gt;write&lt;/span&gt; &lt;span class='nb'&gt;text&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;cd &amp;quot;&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&lt;/span&gt; &lt;span class='nv'&gt;theFilePath&lt;/span&gt;
-		&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
-	&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
-&lt;span class='k'&gt;end&lt;/span&gt; &lt;span class='k'&gt;tell&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content>
- </entry>
  
  <entry>
    <id>http://tomafro.net/2012/09/command-line-openmeta-tagging-on-macos</id>
@@ -208,61 +116,61 @@ debug1: Remote: No xauth program; cannot forward with spoofing.
 
 &lt;p&gt;3. You screen will look like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;4. Select &lt;em&gt;Configuration Profiles&lt;/em&gt; from the pane on the lefthand side&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;5. Click on &lt;em&gt;New&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;6. Enter some required values in the &lt;em&gt;General&lt;/em&gt; section&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;7. Select the &lt;em&gt;Credentials&lt;/em&gt; section&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;8. Click on &lt;em&gt;Configure&lt;/em&gt; and select your network certificate (I used a base64 encoded certificate)&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;9. Now go back to the &lt;em&gt;Wi-Fi&lt;/em&gt; section (never mind, Wi-Fi works for both wireless and cable connection)&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;10. Now create a new Configuration. For a cable connection, specify any name as SSID, for a wireless connection - obviously - specify the &lt;em&gt;correct&lt;/em&gt; SSID&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;11. Now select the protocols you need to use. In my case it was TTLS and PEAP with MSCHAPv2 authentication&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;12. Move on to the &lt;em&gt;Authentication&lt;/em&gt; tab and put in your username and password (if needed). In case you need to present a certificate, go back to step 8 and import your &lt;em&gt;private key&lt;/em&gt; for this certificate. You should be able to select it in the dropdown underneath the &lt;em&gt;Password&lt;/em&gt; field.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;13. Last but not least navigate to the &lt;em&gt;Trust&lt;/em&gt; tab and activate the checkbox next to your network certificate you have to trust.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;14. After you&amp;#8217;ve done all that, you click on &lt;em&gt;Export&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;15. In the &lt;em&gt;Export Configuration Profile&lt;/em&gt; dialog you select &lt;em&gt;None&lt;/em&gt; as security and proceed by clicking &lt;em&gt;Export &amp;#8230;&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;16. In the next dialog you just save the file somewhere on your harddisk&lt;/p&gt;
 
 &lt;p&gt;17. To import the configuration profile, just double-click the file from finder.&lt;/p&gt;
 
-&lt;p&gt;Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click &lt;em&gt;OK&lt;/em&gt;. You can check the status of your 802.1X connection from the &lt;em&gt;Network Preferences&lt;/em&gt;, allowing you to Connect, Disconnect and view some stats: &lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'&gt;&lt;img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click &lt;em&gt;OK&lt;/em&gt;. You can check the status of your 802.1X connection from the &lt;em&gt;Network Preferences&lt;/em&gt;, allowing you to Connect, Disconnect and view some stats: &lt;a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'&gt;&lt;img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' alt='' /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Hope it&amp;#8217;s helpful for anyone :)&lt;/p&gt;</content>
  </entry>
@@ -389,7 +297,123 @@ db2 &amp;quot;uncatalog node remote&amp;quot;&lt;/code&gt;&lt;/pre&gt;
      <name>Tom Ward</name>
      <email>tom@popdog.net</email>
    </author>
-   <content type="html"></content>
+   <content type="html">&lt;p&gt;Lots of people may know the famous rdesktop bug that keeps you from transferring files from mapped drives on your local machine. The error shown is:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;Path is not accessible. You might not have permission to use this 
+network resource. Contact the administrator of this server to find 
+out &lt;span class='k'&gt;if &lt;/span&gt;your have access permissions.
+
+Attempt to access an invalid address.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;While there is a patch for rdesktop since 2009, it doesn&amp;#8217;t seem to make it into the major distributions. At least not into Ubuntu (11.04 as I&amp;#8217;m speaking).&lt;/p&gt;
+
+&lt;p&gt;So, I&amp;#8217;m patching it myself &amp;#8230; Here are the steps:&lt;/p&gt;
+
+&lt;h4 id='install_all_build_dependencies'&gt;Install all build dependencies&lt;/h4&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;apt-get build-dep rdesktop
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id='get_the_source_package'&gt;Get the source package&lt;/h4&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;mkdir /var/tmp/rdesktop-build
+&lt;span class='nb'&gt;cd&lt;/span&gt; /var/tmp/rdesktop-build
+apt-get &lt;span class='nb'&gt;source &lt;/span&gt;rdesktop
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id='patch_it'&gt;Patch it&lt;/h4&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;sudo patch -p0 &amp;lt;/home/user/Downloads/fix-2022945.patch
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id='build_the_package'&gt;Build the package&lt;/h4&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nb'&gt;cd &lt;/span&gt;rdesktop-1.6.0/
+sudo dpkg-buildpackage -rfakeroot -b
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id='install_the_package'&gt;Install the package&lt;/h4&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nb'&gt;cd&lt;/span&gt; ..
+sudo dpkg -i rdesktop_1.6.0-3ubuntu4.1_amd64.deb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Done. Now rdesktop is working with Windows Server 2008.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2011/11/mastering-the-mac-app-store-1-app-doesnt-install</id>
+   <link href="http://tomafro.net/2011/11/mastering-the-mac-app-store-1-app-doesnt-install"/>
+   <title>Mastering the Mac App Store #1: App doesn't install</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;I had another coming together with the &lt;em&gt;nice&lt;/em&gt; Mac Appstore. I really have mixed feelings about this thing. While I do like the idea of having a central place to manage my apps, it suffers from major problems …&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It&amp;#8217;s too slow.&lt;/li&gt;
+
+&lt;li&gt;It&amp;#8217;s incomplete.&lt;/li&gt;
+
+&lt;li&gt;It causes problems&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Especially the third aspect bit me yesterday. I had the Trial version of &lt;a href='http://www.vicoapp.com/' title='Vico App'&gt;Vico&lt;/a&gt; installed on my Mac (the editor I was looking for, by the way …) and wanted to upgrade to the paid version. That said, the most logical approach for me was to just go to the Mac Appstore and buy the damn thing!&lt;/p&gt;
+
+&lt;p&gt;Having done that, I got suspicious right after I bought it. The Appstore told me that &lt;a href='http://www.vicoapp.com/' title='Vico App'&gt;Vico&lt;/a&gt; was already installed and if I wanted to redownload it. I responded &amp;#8220;Yes, redownload&amp;#8221;. That did nothing - opening &lt;a href='http://www.vicoapp.com/' title='Vico App'&gt;Vico&lt;/a&gt; still showed me my Trial period was over.&lt;/p&gt;
+
+&lt;p&gt;The next try was to remove &lt;em&gt;Vico.app&lt;/em&gt; from my &lt;em&gt;Applications&lt;/em&gt; directory, clearing the Trash and try again. This is where things got really annoying … I was able to select &amp;#8220;Install&amp;#8221; from the Mac Appstore, it showed Launchpad with the nice &lt;a href='http://www.vicoapp.com/' title='Vico App'&gt;Vico&lt;/a&gt; Icon, but after the &lt;em&gt;Installing&lt;/em&gt; step was finished, the icon just disappeared &amp;#8230;&lt;/p&gt;
+
+&lt;p&gt;Looking at the logs revealed at least the outcome of the problem &amp;#8230;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    installd: PackageKit: ----- Begin install -----
+    installd: PackageKit: Not installing MAS receipt for skipped 
+            bundle at Applications/Vico.app
+    installd: Installed &amp;quot;Vico&amp;quot; ()
+    installd: PackageKit: ----- End install -----&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;OK, so it &lt;em&gt;skipped&lt;/em&gt; the bundle. But why? Alright, diving deeper I had a look at the &amp;#8216;installd&amp;#8217; process while running the installation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    # First find the PID
+    ps -ef | grep installd
+    #
+    # Now trace it
+    sudo dtruss -p &amp;lt;pid&amp;gt;
+    # 
+    # Now run the installation again&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Right, a lot of tracing information. However, 2 files that I was suspicious about:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    open(&amp;quot;/var/db/receipts/se.bzero.Vico.plist\0&amp;quot;, 0x601, 0x1
+         = 5 0
+    open(&amp;quot;/var/db/receipts/se.bzero.Vico.bom\0&amp;quot;, 0x601, 0x1B6)
+         = 5 0&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Alright, let&amp;#8217;s clear them (they were also present in /tmp):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    sudo rm /var/db/receipts/se.bzero.Vico.plist 
+    sudo rm /var/db/receipts/se.bzero.Vico.bom
+	sudo rm /tmp/se.bzero.Vico.plist 
+    sudo rm /tmp/se.bzero.Vico.bom&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But not enough, the install still showed the same problem. And even more annoyingly, every installation attempt created the files again &amp;#8230; what I had to do was to restart &amp;#8216;installd&amp;#8217; and the Mac Appstore Management Process &amp;#8216;storeagent&amp;#8217;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    sudo killall installd storeagent&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, relaunching the Mac Appstore I could finally install &lt;a href='http://www.vicoapp.com/' title='Vico App'&gt;Vico&lt;/a&gt; without any further issues …&lt;/p&gt;
+
+&lt;p&gt;Given that this was really annoying - it&amp;#8217;s also what I love about MacOS. You may have a partly malfunctioning Mac Appstore, an App Developer that may have not payed attention to what files to leave where - but in the end - you get it working. Thanks Apple! And hey - please make the Appstore more of a Mac Experience &amp;#8230; soon.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <id>http://tomafro.net/2011/11/black-friday-sale-at-the-apple-store</id>
+   <link href="http://tomafro.net/2011/11/black-friday-sale-at-the-apple-store"/>
+   <title>Black Friday sale at the Apple Store!</title>
+   <author>
+     <name>Tom Ward</name>
+     <email>tom@popdog.net</email>
+   </author>
+   <content type="html">&lt;p&gt;&lt;a href='http://store.apple.com/uk'&gt;Apple&lt;/a&gt; has started its annual &lt;a href='http://store.apple.com/uk'&gt;Black Friday Sale&lt;/a&gt;! The major models (iMac, MacBook Pro, MacBook Air) have the most discounts, however, not the kind of discount you&amp;#8217;d wait a whole year for.&lt;/p&gt;
+
+&lt;p&gt;I finally ordered myself a &lt;a href='http://store.apple.com/uk/product/MC380Z/A?fnode=MTY1NDA1Mg'&gt;Magic Trackpad&lt;/a&gt; to make use of all the new multi-touch gestures in OS Lion on my iMac.&lt;/p&gt;
+
+&lt;p&gt;The sale is on in (as far as I know) all countries, so not limited to the U.S. and/or UK. So make use of it as long as it lasts!&lt;/p&gt;</content>
  </entry>
  
 </feed>

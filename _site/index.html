@@ -48,106 +48,6 @@
 	<div class='row'>
 <div class='post twelvecol'>
   <div class='content'>
-    <h2 class='title'><a href='/2012/10/swap-audio-tracks-in-xvid'>Swap audio tracks in Xvid file</a></h2>
-    <p>Well, this is more or less personal. Still interesting. Needed to batch-swap audio track of some video files (stuff I ripped from DVDs to play in iTunes, and stupidly I selected the german audio channel to play first). When I couldn&#8217;t find a tool doing that, I decided to just explore how it&#8217;s done with ffmpeg. And here&#8217;s the outcome:</p>
-<div class='highlight'><pre><code class='bash'><span class='c'>#!/bin/bash</span>
-
-<span class='nv'>filelist</span><span class='o'>=</span><span class='nv'>$@</span>
-<span class='nv'>OLDVAL</span><span class='o'>=</span>1
-
-<span class='c'># list the available tracks</span>
-ffmpeg -i <span class='nv'>$1</span> 2&gt;&amp;1 | grep Stream
-
-<span class='nb'>printf</span> <span class='s2'>&quot;%s [%s]: &quot;</span> <span class='s2'>&quot;Enter audio track to use: &quot;</span> <span class='s2'>&quot;$OLDVAL&quot;</span>
-<span class='nb'>read </span>NEWVAL
-
-<span class='k'>for </span>file in <span class='nv'>$filelist</span>; <span class='k'>do</span>
-<span class='k'>	</span>ffmpeg -i <span class='nv'>$file</span> -map 0:0 -map 0:<span class='k'>${</span><span class='nv'>NEWVAL</span><span class='k'>}</span> -vcodec copy swap_<span class='nv'>$file</span>
-<span class='k'>done</span>
-</code></pre>
-</div>
-  </div>
-  <div class='meta'>
-  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
-  <span class='date'><a href='/2012/10'>23 October 2012</a></span>
-  <span class='tags'> &middot; <a href='/tags/Scripting' rel='tag'>Scripting</a></span>
-   &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
-  </div>
-</div>
-</div>
-</div><div class='container'>
-	<div class='row'>
-<div class='post twelvecol'>
-  <div class='content'>
-    <h2 class='title'><a href='/2012/10/opening-iterm-at-current-finder-location'>Opening iTerm at current Finder location</a></h2>
-    <p>I often download files, may it be from the web or from my e-mail program of choice (at work: sadly Outlook, at home Mail) and need to do stuff with it in the console.</p>
-
-<p>To speed up this process, I&#8217;ve written this small AppleScript. The ideas far outpace my abilities with AppleScript, so for now it only works in Finder (although it has stuff in it to prepare it to work universally, it currently doesn&#8217;t). I thought I&#8217;d share it anyway, so here it comes:</p>
-<div class='highlight'><pre><code class='applescript'><span class='c'>-- get active window</span>
-<span class='k'>tell</span> <span class='nb'>application</span> <span class='s2'>&quot;System Events&quot;</span>
-	<span class='c'>-- get the name of the frontmost application</span>
-	<span class='k'>set</span> <span class='nv'>theApp</span> <span class='k'>to</span> <span class='p'>(</span><span class='na'>name</span> <span class='k'>of</span> <span class='nb'>the</span> <span class='nb'>first</span> <span class='nv'>process</span> <span class='nb'>whose</span> <span class='na'>frontmost</span> <span class='ow'>is</span> <span class='no'>true</span><span class='p'>)</span> <span class='k'>as </span><span class='nc'>text</span>
-<span class='k'>end</span> <span class='k'>tell</span>
-
-<span class='c'>-- debug</span>
-<span class='c'>--tell application &quot;Finder&quot; to display dialog theApp</span>
-
-
-<span class='k'>tell</span> <span class='nb'>application</span> <span class='nv'>theApp</span>
-	<span class='c'>-- check if we have documents or, basically, Finder</span>
-	<span class='k'>set</span> <span class='nv'>documentCount</span> <span class='k'>to</span> <span class='nb'>count</span> <span class='nb'>documents</span>
-	<span class='c'>-- if we have documents, select the currently open one</span>
-	<span class='k'>if</span> <span class='nv'>documentCount</span> <span class='o'>&gt;</span> <span class='mi'>0</span> <span class='k'>then</span>
-		<span class='c'>-- fetch the document name</span>
-		<span class='k'>set</span> <span class='nv'>theDocument</span> <span class='k'>to</span> <span class='na'>document</span> <span class='mi'>1</span>
-		<span class='k'>set</span> <span class='nv'>theFile</span> <span class='k'>to</span> <span class='na'>path</span> <span class='k'>of</span> <span class='nv'>theDocument</span>
-		<span class='c'>-- chop the file name to cd to the directory</span>
-		<span class='k'>set</span> <span class='nv'>tid</span> <span class='k'>to</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span>
-		<span class='k'>set</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span> <span class='k'>to</span> <span class='s2'>&quot;/&quot;</span>
-		<span class='k'>set</span> <span class='nv'>chunks</span> <span class='k'>to</span> <span class='nb'>text</span> <span class='nb'>items</span> <span class='k'>of</span> <span class='nv'>theFile</span>
-		<span class='k'>if</span> <span class='nb'>last</span> <span class='nb'>item</span> <span class='k'>of</span> <span class='nv'>chunks</span> <span class='ow'>is</span> <span class='s2'>&quot;&quot;</span> <span class='k'>then</span> <span class='k'>set</span> <span class='nv'>chunks</span> <span class='k'>to</span> <span class='nv'>reverse</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>rest</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='nv'>chunks</span><span class='p'>))</span>
-		<span class='k'>set</span> <span class='nv'>theFilePath</span> <span class='k'>to</span> <span class='nb'>quoted form</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>rest</span> <span class='k'>of</span> <span class='p'>(</span><span class='nv'>reverse</span> <span class='k'>of</span> <span class='nv'>chunks</span><span class='p'>))</span> <span class='k'>as </span><span class='nc'>text</span><span class='p'>)</span>
-		<span class='k'>set</span> <span class='no'>AppleScript</span>&#39;s <span class='no'>text item delimiters</span> <span class='k'>to</span> <span class='nv'>tid</span>
-	<span class='k'>else</span>
-		<span class='k'>using terms from</span> <span class='nb'>application</span> <span class='s2'>&quot;Finder&quot;</span>
-			<span class='c'>-- no documents open. Here comes Finder ...</span>
-			<span class='k'>set</span> <span class='nv'>theFilePath</span> <span class='k'>to</span> <span class='nv'>POSIX</span> <span class='na'>path</span> <span class='k'>of</span> <span class='p'>(</span><span class='na'>target</span> <span class='k'>of</span> <span class='na'>window</span> <span class='mi'>1</span> <span class='k'>as</span> <span class='nv'>alias</span><span class='p'>)</span>
-		<span class='k'>end</span> <span class='k'>using terms from</span>
-	<span class='k'>end</span> <span class='k'>if</span>
-<span class='k'>end</span> <span class='k'>tell</span>
-
-
-<span class='c'>-- Now open in iTerm2</span>
-<span class='k'>tell</span> <span class='nb'>application</span> <span class='s2'>&quot;iTerm&quot;</span>
-	<span class='nb'>activate</span>
-	<span class='k'>set</span> <span class='nv'>theTerm</span> <span class='k'>to</span> <span class='p'>(</span><span class='nb'>make</span> <span class='nb'>new</span> <span class='nv'>terminal</span><span class='p'>)</span>
-	<span class='k'>tell</span> <span class='nv'>theTerm</span>
-		<span class='c'>-- set size 	</span>
-		<span class='k'>set</span> <span class='nv'>number</span> <span class='k'>of</span> <span class='nv'>columns</span> <span class='k'>to</span> <span class='mi'>132</span>
-		<span class='k'>set</span> <span class='nv'>number</span> <span class='k'>of</span> <span class='nv'>rows</span> <span class='k'>to</span> <span class='mi'>50</span>
-		<span class='c'>-- launch a default shell in a new tab in the same terminal </span>
-		<span class='nb'>launch</span> <span class='nv'>session</span> <span class='s2'>&quot;Default Session&quot;</span>
-		<span class='k'>tell</span> <span class='nb'>the</span> <span class='nb'>last</span> <span class='nv'>session</span>
-			<span class='c'>-- cd to the directory</span>
-			<span class='nb'>write</span> <span class='nb'>text</span> <span class='s2'>&quot;cd &quot;</span> <span class='o'>&amp;</span> <span class='nv'>theFilePath</span>
-		<span class='k'>end</span> <span class='k'>tell</span>
-	<span class='k'>end</span> <span class='k'>tell</span>
-<span class='k'>end</span> <span class='k'>tell</span>
-</code></pre>
-</div>
-  </div>
-  <div class='meta'>
-  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
-  <span class='date'><a href='/2012/10'>23 October 2012</a></span>
-  <span class='tags'> &middot; <a href='/tags/Mac' rel='tag'>Mac</a></span>
-   &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
-  </div>
-</div>
-</div>
-</div><div class='container'>
-	<div class='row'>
-<div class='post twelvecol'>
-  <div class='content'>
     <h2 class='title'><a href='/2012/09/command-line-openmeta-tagging-on-macos'>Command-Line openmeta tagging on MacOS</a></h2>
     <p>I love tags. I want to use them more (I am a lazy ass), because when I use them I find myself finding the stuff I look for way easier. I use <a href='http://www.caseapps.com/tags/'>Tags</a> and <a href='http://www.stclairsoft.com/DefaultFolderX/'>DefaultFolderX</a> mainly for tagging, but when I am on the commandline (like most of the times) I always find it annoying to either use Tags or something else to add/remove/list tags.</p>
 
@@ -207,7 +107,7 @@ rm -f /var/tmp/tag_<span class='nv'>$timestamp</span> &amp;&gt;/dev/null
   <div class='meta'>
   <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
   <span class='date'><a href='/2012/09'>25 September 2012</a></span>
-  <span class='tags'> &middot; <a href='/tags/Mac' rel='tag'>Mac</a></span>
+  <span class='tags'> &middot; <a rel='tag' href='/tags/Mac'>Mac</a></span>
    &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
   </div>
 </div>
@@ -232,7 +132,7 @@ debug1: Remote: No xauth program; cannot forward with spoofing.
   <div class='meta'>
   <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
   <span class='date'><a href='/2012/05'>23 May 2012</a></span>
-  <span class='tags'> &middot; <a href='/tags/Linux' rel='tag'>Linux</a> &middot; <a href='/tags/Mac' rel='tag'>Mac</a></span>
+  <span class='tags'> &middot; <a rel='tag' href='/tags/Linux'>Linux</a> &middot; <a rel='tag' href='/tags/Mac'>Mac</a></span>
    &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
   </div>
 </div>
@@ -256,68 +156,123 @@ debug1: Remote: No xauth program; cannot forward with spoofing.
 
 <p>3. You screen will look like this:</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.06.25-300x185.png' alt='' /></a></p>
 
 <p>4. Select <em>Configuration Profiles</em> from the pane on the lefthand side</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.07.16.png' alt='' /></a></p>
 
 <p>5. Click on <em>New</em></p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.08.05.png' alt='' /></a></p>
 
 <p>6. Enter some required values in the <em>General</em> section</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.10.10-300x167.png' alt='' /></a></p>
 
 <p>7. Select the <em>Credentials</em> section</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.11.18-300x137.png' alt='' /></a></p>
 
 <p>8. Click on <em>Configure</em> and select your network certificate (I used a base64 encoded certificate)</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.14.27-300x173.png' alt='' /></a></p>
 
 <p>9. Now go back to the <em>Wi-Fi</em> section (never mind, Wi-Fi works for both wireless and cable connection)</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.15.37-300x137.png' alt='' /></a></p>
 
 <p>10. Now create a new Configuration. For a cable connection, specify any name as SSID, for a wireless connection - obviously - specify the <em>correct</em> SSID</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.19.45-300x185.png' alt='' /></a></p>
 
 <p>11. Now select the protocols you need to use. In my case it was TTLS and PEAP with MSCHAPv2 authentication</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.21.06-300x203.png' alt='' /></a></p>
 
 <p>12. Move on to the <em>Authentication</em> tab and put in your username and password (if needed). In case you need to present a certificate, go back to step 8 and import your <em>private key</em> for this certificate. You should be able to select it in the dropdown underneath the <em>Password</em> field.</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.22.11-300x266.png' alt='' /></a></p>
 
 <p>13. Last but not least navigate to the <em>Trust</em> tab and activate the checkbox next to your network certificate you have to trust.</p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.23.52-300x229.png' alt='' /></a></p>
 
 <p>14. After you&#8217;ve done all that, you click on <em>Export</em></p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.24.56.png' alt='' /></a></p>
 
 <p>15. In the <em>Export Configuration Profile</em> dialog you select <em>None</em> as security and proceed by clicking <em>Export &#8230;</em></p>
 
-<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' /></a></p>
+<p><a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.25.35-300x219.png' alt='' /></a></p>
 
 <p>16. In the next dialog you just save the file somewhere on your harddisk</p>
 
 <p>17. To import the configuration profile, just double-click the file from finder.</p>
 
-<p>Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click <em>OK</em>. You can check the status of your 802.1X connection from the <em>Network Preferences</em>, allowing you to Connect, Disconnect and view some stats: <a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'><img alt='' src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' /></a></p>
+<p>Whenever you connect a network cable, a dialog should pop up asking you for the configuration profile to use. Just select the name you specified earlier and click <em>OK</em>. You can check the status of your 802.1X connection from the <em>Network Preferences</em>, allowing you to Connect, Disconnect and view some stats: <a href='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13.png'><img src='http://www.nxhelp.com/wp-content/uploads/2012/04/Screen-Shot-2012-04-26-at-10.34.13-300x266.png' alt='' /></a></p>
 
 <p>Hope it&#8217;s helpful for anyone :)</p>
   </div>
   <div class='meta'>
   <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
   <span class='date'><a href='/2012/04'>26 April 2012</a></span>
-  <span class='tags'> &middot; <a href='/tags/Lion' rel='tag'>Lion</a> &middot; <a href='/tags/Mac' rel='tag'>Mac</a></span>
+  <span class='tags'> &middot; <a rel='tag' href='/tags/Lion'>Lion</a> &middot; <a rel='tag' href='/tags/Mac'>Mac</a></span>
+   &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
+  </div>
+</div>
+</div>
+</div><div class='container'>
+	<div class='row'>
+<div class='post twelvecol'>
+  <div class='content'>
+    <h2 class='title'><a href='/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac'>Import Mail from Thunderbird to Outlook 2011 on Mac</a></h2>
+    <p>I recently got a Mac from my employer, and I&#8217;d like to try using Outlook 2011 for Mac. That, however, requires all my emails from Thunderbird to be transferred to Outlook 2011. After barely clinging onto sanity trying to migrate, I finally found the following article which brought me (at least halfway) there:</p>
+
+<p><a href='http://www.frontendeveloper.com/thunderbird_outlook/'>http://www.frontendeveloper.com/thunderbird_outlook/</a></p>
+
+<p>However, the App mentioned to change the creator- and type-codes is only running on Rosetta (which of course isn&#8217;t available on Lion). I exchanged FileType to the (not nearly as comfortable, but at least working) app called <a href='http://www.macupdate.com/app/mac/17300/quick-change'>Quick Change</a>. You will have to use the following codes:</p>
+
+<ul>
+<li>Creator: ttxt</li>
+
+<li>Type: TEXT</li>
+</ul>
+
+<p>After that, and, renaming the files to mbx, I was able to import my mails into Outlook 2011.</p>
+  </div>
+  <div class='meta'>
+  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
+  <span class='date'><a href='/2012/03'>27 March 2012</a></span>
+  <span class='tags'> &middot; <a rel='tag' href='/tags/mac'>mac</a> &middot; <a rel='tag' href='/tags/mbox'>mbox</a> &middot; <a rel='tag' href='/tags/outlook'>outlook</a> &middot; <a rel='tag' href='/tags/thunderbird'>thunderbird</a></span>
+   &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
+  </div>
+</div>
+</div>
+</div><div class='container'>
+	<div class='row'>
+<div class='post twelvecol'>
+  <div class='content'>
+    <h2 class='title'><a href='/2012/03/prevent-file-deletion-on-linux'>Prevent file deletion on Linux</a></h2>
+    <p>Note to self, before I google it another 25 times &#8230; Here&#8217;s how to prevent a file to be deleted using extended attributes on Linux:</p>
+<div class='highlight'><pre><code class='bash'>    chattr +i &lt;file&gt;
+</code></pre>
+</div>
+<p>to check if it worked:</p>
+<div class='highlight'><pre><code class='bash'>    lsattr &lt;file&gt;
+</code></pre>
+</div>
+<p>example:</p>
+<div class='highlight'><pre><code class='bash'>    <span class='nv'>$&gt;</span> sudo chattr +i testfile
+    <span class='nv'>$&gt;</span> lsattr testfile
+    ----i------------e- testfile
+</code></pre>
+</div>
+  </div>
+  <div class='meta'>
+  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
+  <span class='date'><a href='/2012/03'>20 March 2012</a></span>
+  <span class='tags'> &middot; <a rel='tag' href='/tags/Linux'>Linux</a></span>
    &middot; <span class='comments'><a href='/#disqus_thread'>Comments</a></span> 
   </div>
 </div>
@@ -328,30 +283,6 @@ debug1: Remote: No xauth program; cannot forward with spoofing.
 <h3>Older Posts:</h3>
 </div>
 </div>
-
-  <div class='row'>
-  <div class='twelvecol'>
-  <h3 class='title'><a href='/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac'>Import Mail from Thunderbird to Outlook 2011 on Mac</a></h3>
-  <div class='oldmeta'>
-  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
-  <span class='date'><a href='/2012/03'>27 March 2012</a></span>
-  <span class='tags' /> &middot; 
-  <span class='comments'><a href='/2012/03/import-mail-from-thunderbird-to-outlook-2011-on-mac/#disqus_thread'>Comments</a></span>
-  </div>
-  </div>
-  </div>
-
-  <div class='row'>
-  <div class='twelvecol'>
-  <h3 class='title'><a href='/2012/03/prevent-file-deletion-on-linux'>Prevent file deletion on Linux</a></h3>
-  <div class='oldmeta'>
-  <span class='author'><a href='http://nxhelp.com'>Thomas Uhde</a></span> &middot; 
-  <span class='date'><a href='/2012/03'>20 March 2012</a></span>
-  <span class='tags' /> &middot; 
-  <span class='comments'><a href='/2012/03/prevent-file-deletion-on-linux/#disqus_thread'>Comments</a></span>
-  </div>
-  </div>
-  </div>
 
   <div class='row'>
   <div class='twelvecol'>

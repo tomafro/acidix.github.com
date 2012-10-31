@@ -49,7 +49,43 @@
 <div class="post twelvecol">
   <div class="content">
     <h2 class="title"><a href="/2011/11/patching-rdesktop-to-be-compatible-with-windows-2008">Patching rdesktop to be compatible with Windows 2008</a></h2>
-    
+    <p>Lots of people may know the famous rdesktop bug that keeps you from transferring files from mapped drives on your local machine. The error shown is:</p>
+<div class='highlight'><pre><code class='bash'>Path is not accessible. You might not have permission to use this 
+network resource. Contact the administrator of this server to find 
+out <span class='k'>if </span>your have access permissions.
+
+Attempt to access an invalid address.
+</code></pre>
+</div>
+<p>While there is a patch for rdesktop since 2009, it doesn&#8217;t seem to make it into the major distributions. At least not into Ubuntu (11.04 as I&#8217;m speaking).</p>
+
+<p>So, I&#8217;m patching it myself &#8230; Here are the steps:</p>
+
+<h4 id='install_all_build_dependencies'>Install all build dependencies</h4>
+<div class='highlight'><pre><code class='bash'>apt-get build-dep rdesktop
+</code></pre>
+</div>
+<h4 id='get_the_source_package'>Get the source package</h4>
+<div class='highlight'><pre><code class='bash'>mkdir /var/tmp/rdesktop-build
+<span class='nb'>cd</span> /var/tmp/rdesktop-build
+apt-get <span class='nb'>source </span>rdesktop
+</code></pre>
+</div>
+<h4 id='patch_it'>Patch it</h4>
+<div class='highlight'><pre><code class='bash'>sudo patch -p0 &lt;/home/user/Downloads/fix-2022945.patch
+</code></pre>
+</div>
+<h4 id='build_the_package'>Build the package</h4>
+<div class='highlight'><pre><code class='bash'><span class='nb'>cd </span>rdesktop-1.6.0/
+sudo dpkg-buildpackage -rfakeroot -b
+</code></pre>
+</div>
+<h4 id='install_the_package'>Install the package</h4>
+<div class='highlight'><pre><code class='bash'><span class='nb'>cd</span> ..
+sudo dpkg -i rdesktop_1.6.0-3ubuntu4.1_amd64.deb
+</code></pre>
+</div>
+<p>Done. Now rdesktop is working with Windows Server 2008.</p>
   </div>
   <div class="meta">
   <span class="author"><a href="http://nxhelp.com">Thomas Uhde</a></span> &middot; 

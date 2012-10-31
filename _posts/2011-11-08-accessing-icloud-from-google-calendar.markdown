@@ -68,9 +68,9 @@ if (empty($output))   
     // close curl resource
     curl_close($ch);
     
-    ?>
+?>
 {% endhighlight %}
-     
+
 ### Solution 2 - mod_proxy ###
 The even easier solution (as long as you've got your own configurable Apache instance) is using mod_proxy to use a simple HTTP Reverse Proxy to get the feed from the Apple Servers and redirect it. One pitfall though is that the iCloud access strictly requires https access, so we'll have to configure apache for ssl as well. This example is based on a RedHat 5.4 system, so adapt accordingly ...
      
@@ -110,9 +110,9 @@ SSLProxyEngine  on
 ProxyReceiveBufferSize 4096
     
 ProxyPass /ical/ https://p03-calendarws.icloud.com/
-ProxyPassReverse /ical/ https://p03-calendarws.icloud.com/</pre>
+ProxyPassReverse /ical/ https://p03-calendarws.icloud.com/
 {% endhighlight %}
-     
+
 Now, start the apache process:
 
 {% highlight bash %}
